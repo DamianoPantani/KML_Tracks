@@ -1,0 +1,18 @@
+{
+  "name": "wanderfavs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": "12.9.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.0",
+    "google-panorama-by-id": "^2.1.0"
+  }
+}
