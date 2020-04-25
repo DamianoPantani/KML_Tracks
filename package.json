@@ -12,7 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.0",
-    "google-panorama-by-id": "^2.1.0"
+    "axios": "^0.19.2",
+    "jstoxml": "^1.6.5",
+    "object-to-xml": "^2.0.0",
+    "p-queue": "^6.3.0",
+    "xml-js": "^1.6.11"
   }
 }
