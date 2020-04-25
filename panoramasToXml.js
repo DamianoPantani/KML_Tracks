@@ -1,4 +1,4 @@
-const { Camera, Style } = require('./cameraOptions');
+const { Camera, Style } = require('./pinStyling');
 
 module.exports = {
 
@@ -18,11 +18,14 @@ module.exports = {
             pano.isStreetView ? {
               PhotoOverlay: {
                 Camera: Camera(pano),
-                Style: Style(pano),
+                Style: Style(),
                 ...pano
               }
             } : {
-              Placemark: pano
+              Placemark: {
+                Style: Style("poi"),
+                ...pano
+              }
             }
           )
         }

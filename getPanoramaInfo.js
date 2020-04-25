@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { altitude } = require('./pinStyling'); 
 
 module.exports = (currentPanos, category) => ({ panoid }) => () =>
     currentPanos[panoid]
@@ -11,14 +12,14 @@ module.exports = (currentPanos, category) => ({ panoid }) => () =>
                 }
                 const { description, region, country, lng, lat } = Location;
                 return {
-                    isStreetView: Location.description === "", // TODO: change me :(
+                    isStreetView: true,
                     id: panoid,
                     category,
                     name: description || region || country,
                     longitude: lng,
                     latitude: lat,
                     Point: {
-                        coordinates: `${lng},${lat},2.5`
+                        coordinates: `${lng},${lat},${altitude}`
                     }
                 }
             })
@@ -37,7 +38,7 @@ module.exports = (currentPanos, category) => ({ panoid }) => () =>
                         longitude: lng,
                         latitude: lat,
                         Point: {
-                            coordinates: `${lng},${lat},2.5`
+                            coordinates: `${lng},${lat},${altitude}`
                         }
                     };
                 })

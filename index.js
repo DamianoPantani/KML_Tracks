@@ -7,11 +7,17 @@ const { groupByCategory, toKml, fromKml } = require('./panoramasToXml');
 
 const promiseQueue = new PQueue({ concurrency: 4 });
 
+const sourceFile = 'resources/Wander_Favorites.json';
+const outuptAllFile = 'resources/Wander_Favorites.kml';
+const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
+
 (async () => {
 
     console.log("-- Reading files --");
-    const favoritesJson = fs.readFileSync('D:\\Damian\\Inne\\Wander_Favorites.json', 'utf8');
-    const favoritesKml = fs.readFileSync('D:\\Damian\\Inne\\Wander_Favorites.kml', 'utf8');
+    const favoritesJson = fs.readFileSync(sourceFile, 'utf8');
+    const favoritesKml = fs.existsSync(outuptAllFile) ?
+        fs.readFileSync(outuptAllFile, 'utf8')
+        : "";
     
     console.log("-- Parsing files --");
     const favorites = JSON.parse(favoritesJson);
@@ -31,12 +37,12 @@ const promiseQueue = new PQueue({ concurrency: 4 });
     const newCategories = panos.filter(p => !p.fromKml).reduce(groupByCategory, {});
     
     console.log("-- Saving results --");
-    fs.writeFileSync('D:\\Damian\\Inne\\Wander_Favorites.kml', toXML(toKml(allCategories), {
+    fs.writeFileSync(outuptAllFile, toXML(toKml(allCategories), {
         header: true,
         indent: '    ',
         _selfCloseTag: false
     }), "UTF-8");
-    fs.writeFileSync('D:\\Damian\\Inne\\Wander_Favorites_NEW.kml', toXML(toKml(newCategories), {
+    fs.writeFileSync(outputNewFile, toXML(toKml(newCategories), {
         header: true,
         indent: '    ',
         _selfCloseTag: false
