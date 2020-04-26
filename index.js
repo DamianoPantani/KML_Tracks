@@ -26,15 +26,19 @@ const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
     console.log("-- Processing data --");
     const currentPanos = fromKml(currentFavorites);
     const panoPromises = favorites.flatMap(({ folderContents, title }) => 
-        folderContents.map(toPanoramaPromise(currentPanos, title))
-    );
+        folderContents.map(p => {
+            p.category = title;
+            return p;
+        })
+    ).map(toPanoramaPromise(currentPanos))
+
     console.log("-- Fetching results --");
     const panos = await promiseQueue.addAll(panoPromises)
         .then(res => res.filter(Boolean));
     
     console.log("-- Processing results --");
     const allCategories = panos.reduce(groupByCategory, {});
-    const newCategories = panos.filter(p => !p.fromKml).reduce(groupByCategory, {});
+    const newCategories = panos.filter(p => !p.isStored).reduce(groupByCategory, {});
     
     console.log("-- Saving results --");
     fs.writeFileSync(outuptAllFile, toXML(toKml(allCategories), {

@@ -49,7 +49,7 @@ module.exports = {
     .reduce((acc, { id, isStreetView, name, longitude, latitude, category, Point }) => {
       acc[id._text] = {
         id: id._text,
-        fromKml: true,
+        isStored: true,
         isStreetView: isStreetView._text === "true",
         name: name._text,
         category: category._text,

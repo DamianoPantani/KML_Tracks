@@ -1,7 +1,7 @@
 const axios = require('axios');
 const { altitude } = require('./pinStyling'); 
 
-module.exports = (currentPanos, category) => ({ panoid }) => () =>
+module.exports = (currentPanos) => ({ panoid, category }, idx, { length }) => () => (
     currentPanos[panoid]
        ? Promise.resolve(currentPanos[panoid])
        : axios.get(`http://maps.google.com/cbk?output=json&panoid=${panoid}&cb_client=apiv3&v=4&dm=1&pm=1&ph=1&hl=en`)
@@ -44,3 +44,5 @@ module.exports = (currentPanos, category) => ({ panoid }) => () =>
                 })
             )
             .catch(e => console.error(`${panoid}:`, e))
+)
+.finally(() => !(idx % 20) && console.log(`${100*idx/length}%`));
