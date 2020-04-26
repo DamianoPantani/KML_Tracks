@@ -3,22 +3,23 @@ const { toXML } = require('jstoxml');
 const convert = require('xml-js');
 const { default: PQueue } = require('p-queue');
 const { toPanoramaPromise, groupByCategory, rename } = require('./getPanoramaInfo');
-const { toKml, fromKml } = require('./panoramasToXml');
+const { toKml, fromKml, xmlOptions } = require('./panoramasToXml');
 
 const promiseQueue = new PQueue({ concurrency: 4 });
 
 const customNamesFile = 'resources/names.json';
 const sourceFile = 'resources/Wander_Favorites.json';
-const outuptAllFile = 'resources/Wander_Favorites.kml';
-const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
+const outuptWebFile = 'resources/Wander_Favorites.kml';
+const outputLocalFile = 'resources/Wander_Favorites_LOCAL.kml';
+const outputLocalNewFile = 'resources/Wander_Favorites_LOCAL_NEW.kml';
 
 (async () => {
 
     console.log("-- Reading files --");
     const customNamesJson = fs.readFileSync(customNamesFile, 'utf8');
     const favoritesJson = fs.readFileSync(sourceFile, 'utf8');
-    const favoritesKml = fs.existsSync(outuptAllFile) ?
-        fs.readFileSync(outuptAllFile, 'utf8')
+    const favoritesKml = fs.existsSync(outuptWebFile) ?
+        fs.readFileSync(outuptWebFile, 'utf8')
         : "";
     
     console.log("-- Parsing files --");
@@ -44,16 +45,9 @@ const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
     const newCategories = panos.filter(p => !p.isStored).reduce(groupByCategory, {});
     
     console.log("-- Saving results --");
-    fs.writeFileSync(outuptAllFile, toXML(toKml(allCategories), {
-        header: true,
-        indent: '    ',
-        _selfCloseTag: false
-    }), "UTF-8");
-    fs.writeFileSync(outputNewFile, toXML(toKml(newCategories), {
-        header: true,
-        indent: '    ',
-        _selfCloseTag: false
-    }), "UTF-8");
+    fs.writeFileSync(outuptWebFile, toXML(toKml(allCategories), xmlOptions), "UTF-8");
+    fs.writeFileSync(outputLocalFile, toXML(toKml(allCategories, true), xmlOptions), "UTF-8");
+    fs.writeFileSync(outputLocalNewFile, toXML(toKml(newCategories), xmlOptions), "UTF-8");
 
     console.log("-- DONE --");
     

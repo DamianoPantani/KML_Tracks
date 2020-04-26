@@ -2,7 +2,7 @@ const { Camera, Camera360, Style } = require('./pinStyling');
 
 module.exports = {
 
-  toKml: (groups) => Object
+  toKml: (groups, isLocalFile) => Object
     .entries(groups)
     .reduce((kml, [category, panos]) => {
       kml.kml.Document.push({
@@ -17,7 +17,7 @@ module.exports = {
               }
             } : {
               Placemark: {
-                Camera: Camera360(pano),
+                ...(isLocalFile ? {} : { Camera: Camera360(pano)}),
                 Style: Style("poi"),
                 ...pano
               }
@@ -55,6 +55,12 @@ module.exports = {
         }
       }
       return acc;
-  }, {})
+  }, {}),
+
+  xmlOptions: {
+    header: true,
+    indent: '    ',
+    _selfCloseTag: false
+  }
 
 };

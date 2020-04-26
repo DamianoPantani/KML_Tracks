@@ -30,7 +30,7 @@ module.exports = {
     latitude,
     altitude: 0,
     heading: 0,
-    tilt: 90,
+    tilt: 89,
     roll: 0,
   }),
 
@@ -51,7 +51,7 @@ module.exports = {
     latitude,
     altitude: 0,
     heading: 0,
-    tilt: 90,
+    tilt: 89,
     roll: 0,
     "gx:fovy": 60,
     altitudeMode: "absolute"
