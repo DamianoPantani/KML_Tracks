@@ -1,4 +1,4 @@
-const { Camera, Style } = require('./pinStyling');
+const { Camera, Camera360, Style } = require('./pinStyling');
 
 module.exports = {
 
@@ -17,6 +17,7 @@ module.exports = {
               }
             } : {
               Placemark: {
+                Camera: Camera360(pano),
                 Style: Style("poi"),
                 ...pano
               }

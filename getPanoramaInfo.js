@@ -1,5 +1,4 @@
 const axios = require('axios');
-const { altitude } = require('./pinStyling'); 
 
 module.exports = {
 
@@ -21,7 +20,8 @@ module.exports = {
                         longitude: lng,
                         latitude: lat,
                         Point: {
-                            coordinates: `${lng},${lat},${altitude}`
+			                altitudeMode: "relativeToGround",
+                            coordinates: `${lng},${lat},0`
                         }
                     }
                 })
@@ -40,7 +40,8 @@ module.exports = {
                             longitude: lng,
                             latitude: lat,
                             Point: {
-                                coordinates: `${lng},${lat},${altitude}`
+                                altitudeMode: "relativeToGround",
+                                coordinates: `${lng},${lat},0`
                             }
                         };
                     })

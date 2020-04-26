@@ -1,8 +1,5 @@
 module.exports = {
 
-  // TODO: when switching between images, sometimes we're going underground and camera stops
-  altitude: 2.5,
-
   Camera: ({ longitude, latitude }) => ({
     "gx:ViewerOptions": [
       {
@@ -31,10 +28,33 @@ module.exports = {
     ],
     longitude,
     latitude,
-    altitude: this.altitude,
+    altitude: 0,
     heading: 0,
     tilt: 90,
     roll: 0,
+  }),
+
+  Camera360: ({ longitude, latitude, id }) => ({
+    "gx:ViewerOptions": [
+      {
+        "gx:option": {
+          _attrs: {
+            name: "streetview",
+          },
+        },
+      },
+      {
+        "gx:streetViewPanoId": `fife-media:${id}`,
+      }
+    ],
+    longitude,
+    latitude,
+    altitude: 0,
+    heading: 0,
+    tilt: 90,
+    roll: 0,
+    "gx:fovy": 60,
+    altitudeMode: "absolute"
   }),
 
   Style: (icon="motorcycling") => ({
