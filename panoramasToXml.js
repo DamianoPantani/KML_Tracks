@@ -2,12 +2,6 @@ const { Camera, Style } = require('./pinStyling');
 
 module.exports = {
 
-  groupByCategory: (categories, pano) => {
-    const category = categories[pano.category] = (categories[pano.category] || []);
-    category.push(pano);
-    return categories;
-  },
-
   toKml: (groups) => Object
     .entries(groups)
     .reduce((kml, [category, panos]) => {

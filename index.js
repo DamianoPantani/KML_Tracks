@@ -2,11 +2,12 @@ const fs = require('fs');
 const { toXML } = require('jstoxml');
 const convert = require('xml-js');
 const { default: PQueue } = require('p-queue');
-const toPanoramaPromise = require('./getPanoramaInfo');
-const { groupByCategory, toKml, fromKml } = require('./panoramasToXml');
+const { toPanoramaPromise, groupByCategory, rename } = require('./getPanoramaInfo');
+const { toKml, fromKml } = require('./panoramasToXml');
 
 const promiseQueue = new PQueue({ concurrency: 4 });
 
+const customNamesFile = 'resources/names.json';
 const sourceFile = 'resources/Wander_Favorites.json';
 const outuptAllFile = 'resources/Wander_Favorites.kml';
 const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
@@ -14,12 +15,14 @@ const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
 (async () => {
 
     console.log("-- Reading files --");
+    const customNamesJson = fs.readFileSync(customNamesFile, 'utf8');
     const favoritesJson = fs.readFileSync(sourceFile, 'utf8');
     const favoritesKml = fs.existsSync(outuptAllFile) ?
         fs.readFileSync(outuptAllFile, 'utf8')
         : "";
     
     console.log("-- Parsing files --");
+    const customNames = JSON.parse(customNamesJson);
     const favorites = JSON.parse(favoritesJson);
     const currentFavorites = JSON.parse(convert.xml2json(favoritesKml, { compact: true }));
     
@@ -34,7 +37,7 @@ const outputNewFile = 'resources/Wander_Favorites_NEW.kml';
 
     console.log("-- Fetching results --");
     const panos = await promiseQueue.addAll(panoPromises)
-        .then(res => res.filter(Boolean));
+        .then(res => res.filter(Boolean).map(rename(customNames)));
     
     console.log("-- Processing results --");
     const allCategories = panos.reduce(groupByCategory, {});
