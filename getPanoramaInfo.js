@@ -2,9 +2,9 @@ const axios = require('axios');
 
 module.exports = {
 
-    toPanoramaPromise: (currentPanos) => ({ panoid, category }, idx, { length }) => () => (
+    toPanoramaPromise: (currentPanos) => ({ panoid, category, title }, idx, { length }) => () => (
         currentPanos[panoid]
-           ? Promise.resolve(currentPanos[panoid])
+           ? Promise.resolve(updateData(currentPanos[panoid], title))
            : axios.get(`http://maps.google.com/cbk?output=json&panoid=${panoid}&cb_client=apiv3&v=4&dm=1&pm=1&ph=1&hl=en`)
                 .then(({ data }) => {
                     const { Location } = data;
@@ -16,7 +16,7 @@ module.exports = {
                         isStreetView: true,
                         id: panoid,
                         category,
-                        name: description || region || country,
+                        name: title || description || region || country,
                         longitude: lng,
                         latitude: lat,
                         Point: {
@@ -36,7 +36,7 @@ module.exports = {
                             isStreetView: false,
                             id: panoid,
                             category,
-                            name: copyright,
+                            name: title || copyright,
                             longitude: lng,
                             latitude: lat,
                             Point: {
@@ -56,9 +56,14 @@ module.exports = {
         return categories;
     },
 
-    rename: (customNames) => (pano) => {
-        pano.name = customNames[pano.id] || pano.name;
+    fillData: (category) => (pano) => {
+        pano.category = category;
+        pano.name = pano.title;
         return pano;
     }
-
 };
+
+const updateData = (pano, title) => {
+    pano.name = title || pano.name;
+    return pano;
+}
