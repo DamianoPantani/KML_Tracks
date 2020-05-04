@@ -1,4 +1,4 @@
-const { Camera, Camera360, Style } = require('./pinStyling');
+const { camera, camera360, style } = require('./pinStyling');
 
 module.exports = {
 
@@ -11,14 +11,14 @@ module.exports = {
           _content: panos.map(pano =>
             pano.isStreetView ? {
               PhotoOverlay: {
-                Camera: Camera(pano),
-                Style: Style(),
+                Camera: camera(pano),
+                Style: style(),
                 ...pano
               }
             } : {
               Placemark: {
-                ...(isLocalFile ? {} : { Camera: Camera360(pano)}),
-                Style: Style("poi"),
+                ...(isLocalFile ? {} : { Camera: camera360(pano)}),
+                Style: style("poi"),
                 ...pano
               }
             }

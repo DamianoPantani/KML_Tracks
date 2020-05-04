@@ -1,6 +1,6 @@
 module.exports = {
 
-  Camera: ({ longitude, latitude }) => ({
+  camera: ({ longitude, latitude }) => ({
     "gx:ViewerOptions": [
       {
         "gx:option": {
@@ -34,7 +34,7 @@ module.exports = {
     roll: 0,
   }),
 
-  Camera360: ({ longitude, latitude, id }) => ({
+  camera360: ({ longitude, latitude, id }) => ({
     "gx:ViewerOptions": [
       {
         "gx:option": {
@@ -57,7 +57,7 @@ module.exports = {
     altitudeMode: "absolute"
   }),
 
-  Style: (icon="motorcycling") => ({
+  style: (icon="motorcycling") => ({
     IconStyle: {
 			color: "ff00ffff",
       Icon: {

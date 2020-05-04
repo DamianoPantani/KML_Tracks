@@ -48,7 +48,7 @@ module.exports = {
                 )
                 .catch(e => console.error(`${panoid}:`, e))
     )
-    .finally(() => !(idx % 20) && console.log(`${100*idx/length}%`)),
+    .finally(() => !(idx % 20) && console.log(`${Math.ceil(100*idx/length)}%`)),
 
     groupByCategory: (categories, pano) => {
         const category = categories[pano.category] = (categories[pano.category] || []);
