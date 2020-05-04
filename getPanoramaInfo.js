@@ -25,7 +25,7 @@ module.exports = {
                         }
                     }
                 })
-                .catch(() => axios.get(`https://maps.googleapis.com/maps/api/streetview/metadata?pano=${panoid}&key=AIzaSyBucGt0V4z6JlqDcciutoZaV6YmwpEJovs`)
+                .catch(() => axios.get(`https://maps.googleapis.com/maps/api/streetview/metadata?pano=${panoid}&key=${process.env.GOOGLE_MAP_API_KEY}`)
                     .then(({ data }) => {
                         if (!data.location) {
                             throw "Could not find panorama";
