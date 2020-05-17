@@ -28,7 +28,7 @@ module.exports = {
                 .catch(() => axios.get(`https://maps.googleapis.com/maps/api/streetview/metadata?pano=${panoid}&key=${process.env.GOOGLE_MAP_API_KEY}`)
                     .then(({ data }) => {
                         if (!data.location) {
-                            throw "Could not find panorama";
+                            throw `Could not find panorama (${title})`;
                         }
                         const { location, copyright } = data;
                         const { lng, lat } = location;
