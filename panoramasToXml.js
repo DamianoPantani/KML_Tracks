@@ -5,6 +5,8 @@ module.exports = {
   toKml: (groups, isLocalFile) => Object
     .entries(groups)
     .reduce((kml, [category, panos]) => {
+      const isVisited = category.startsWith("Tuuu");
+
       kml.kml.Document.push({
         Folder: {
           name: category,
@@ -12,13 +14,13 @@ module.exports = {
             pano.isStreetView ? {
               PhotoOverlay: {
                 Camera: camera(pano),
-                Style: style(),
+                Style: style(isVisited ? "flag" : "motorcycling"),
                 ...pano
               }
             } : {
               Placemark: {
                 ...(isLocalFile ? {} : { Camera: camera360(pano)}),
-                Style: style("poi"),
+                Style: style(isVisited ? "flag" : "poi"),
                 ...pano
               }
             }

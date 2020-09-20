@@ -59,7 +59,7 @@ module.exports = {
 
   style: (icon="motorcycling") => ({
     IconStyle: {
-			color: "ff00ffff",
+			color: "ff33ff44",
       Icon: {
         href: `http://maps.google.com/mapfiles/kml/shapes/${icon}.png`
       }
