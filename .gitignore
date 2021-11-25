@@ -1,5 +1,2 @@
 node_modules
-.idea/
-hmu-studio.iml
-.env
-/resources
+dist
