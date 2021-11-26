@@ -1,24 +1,31 @@
 {
   "name": "kmlprocessor",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "type": "module",
   "engines": {
     "node": "12.9.1"
   },
   "scripts": {
-    "start": "npx tsc & node dist/index.js"
+    "build": "swc src -d dist",
+    "start": "npm run build && SET NODE_ENV=production & node --experimental-modules --es-module-specifier-resolution=node dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/jszip": "^3.4.1",
-    "@types/node": "^16.11.10",
-    "@typescript-eslint/eslint-plugin": "^4.8.2",
-    "@typescript-eslint/parser": "^4.8.2",
     "jszip": "^3.7.1",
+    "latinize": "^0.5.0",
     "ts-node": "^10.4.0",
     "typescript": "^4.1.5",
     "xml-js": "^1.6.11"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.1.52",
+    "@swc/core": "^1.2.112",
+    "@types/jszip": "^3.4.1",
+    "@types/latinize": "^0.2.15",
+    "@types/node": "^16.11.10",
+    "@typescript-eslint/eslint-plugin": "^4.8.2",
+    "@typescript-eslint/parser": "^4.8.2"
   }
 }

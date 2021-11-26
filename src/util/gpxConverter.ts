@@ -7,10 +7,10 @@ import {
 } from "../types/outputTypes";
 
 const availableColors = [
+  "#ff0000",
   "#a71de1",
   "#f52887",
   "#2ec6ff",
-  "#ff0000",
   "#4e4eff",
   "#ff7200",
 ];
@@ -18,7 +18,6 @@ const availableColors = [
 export function toOutputFolders(inputFolders: TrackFolder[]): GpxFolder[] {
   return inputFolders.map((f, i) => {
     const color = availableColors[i % availableColors.length];
-    debugger;
     return {
       name: f.name,
       files: f.tracks.map((t) => toGpx(t, color)),

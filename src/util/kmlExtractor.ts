@@ -1,3 +1,4 @@
+import latinize from "latinize";
 import { Folder, Placemark, Route } from "../types/inputTypes";
 import { Coord, Track, TrackFolder } from "../types/outputTypes";
 import { FileNameIterator } from "./FileNameIterator";
@@ -19,7 +20,7 @@ export function extractTracks(
 
     if (allTracksInFolder.length) {
       const trackFolder: TrackFolder = {
-        name: folder.name._text,
+        name: latinize(folder.name._text),
         tracks: allTracksInFolder,
       };
 
@@ -35,7 +36,7 @@ function toTracks(placemarks: Placemark[]): Track[] {
   const fileNameIterator = new FileNameIterator();
 
   return routes.map<Track>((p) => ({
-    name: fileNameIterator.next(p.name._text),
+    name: fileNameIterator.next(latinize(p.name._text)),
     coords: parseCoords(p.LineString.coordinates._text),
   }));
 }
