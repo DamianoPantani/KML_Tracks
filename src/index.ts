@@ -4,33 +4,28 @@ import { toOutputFolders } from "./util/gpxConverter";
 import { readKml, saveFolderStructure } from "./util/fileIO";
 import { push } from "./util/adb";
 
-const searchDir = "C:/Users/Damiano/Desktop/";
-
 // TODOs:
 // bold extension property doesn't work
-// auto import KML from google earth
 // export favorite points (with colors)
 
 (async () => {
-  console.log(`-- Reading directory: ${searchDir} --`);
-  const inputFileName = readdirSync(searchDir).find((f) => f.endsWith(".kml"));
-  const inputFilePath = `${searchDir}${inputFileName}`;
-  const outputPath = `${searchDir}tracks`;
+  const tempOutputPath = "C:/Users/Damiano/Desktop/tracks";
+  const inputFilePath = `C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
   const deviceOutputPath = `storage/emulated/0/Android/data/net.osmand/files/tracks`;
 
-  if (!inputFileName) {
-    console.error(`-- No KMLS in ${searchDir} directory --`);
+  if (!inputFilePath) {
+    console.error(`-- Cannot find input file: ${inputFilePath} --`);
     return;
   }
 
-  if (existsSync(outputPath)) {
+  if (existsSync(tempOutputPath)) {
     console.warn(
-      `-- Output directory ${outputPath} already exists, removing --`
+      `-- Temp Output directory ${tempOutputPath} already exists, removing --`
     );
-    rmSync(outputPath, { recursive: true });
+    rmSync(tempOutputPath, { recursive: true });
   }
 
-  console.log(`-- Parsing file: ${inputFileName} --`);
+  console.log(`-- Parsing file: ${inputFilePath} --`);
   const kml = readKml(inputFilePath);
 
   console.log(`-- Extracting tracks --`);
@@ -40,18 +35,21 @@ const searchDir = "C:/Users/Damiano/Desktop/";
   const outputContents = toOutputFolders(trackFolders);
 
   console.log(`-- Saving ${trackFolders.length} output folders --`);
-  mkdirSync(outputPath);
-  saveFolderStructure(outputContents, outputPath);
+  mkdirSync(tempOutputPath);
+  saveFolderStructure(outputContents, tempOutputPath);
 
   console.log(`-- Moving to device --`);
   try {
-    await push(`${outputPath}/.`, deviceOutputPath);
+    await push(`${tempOutputPath}/.`, deviceOutputPath);
   } catch (e) {
     console.error(
       "Couldn't push files to device. Make sure all subfolders already exist and their names do not contain UTF-8 characters"
     );
     console.error(e);
   }
+
+  console.log(`-- Cleaning up --`);
+  rmSync(tempOutputPath, { recursive: true });
 
   console.log("-- DONE --");
 })();

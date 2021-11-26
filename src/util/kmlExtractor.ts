@@ -31,8 +31,9 @@ export function extractTracks(
   return results;
 }
 
-function toTracks(placemarks: Placemark[]): Track[] {
-  const routes = placemarks.filter(isRoute);
+function toTracks(placemarks: Placemark | Placemark[]): Track[] {
+  const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
+  const routes = allPlacemarks.filter(isRoute);
   const fileNameIterator = new FileNameIterator();
 
   return routes.map<Track>((p) => ({

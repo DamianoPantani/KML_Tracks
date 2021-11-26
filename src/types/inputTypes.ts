@@ -20,7 +20,7 @@ export type Folder = KMLStructure | KMLStructure[] | undefined;
 export type KMLStructure = {
   Folder: Folder;
   name: StringAttribute;
-  Placemark?: Placemark[];
+  Placemark?: Placemark | Placemark[];
 };
 
 export type KML = {
