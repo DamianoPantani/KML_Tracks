@@ -1,56 +1,61 @@
-import { existsSync, mkdirSync, rmSync } from "fs";
-import { extractTracks } from "./util/kmlExtractor";
-import { toOutputFolders } from "./util/gpxConverter";
-import { readKml, saveFolderStructure } from "./util/fileIO";
+import { extractFavorites } from "./util/kmlExtractor";
+import { toOutputTracks, toOutputPlaces } from "./util/gpxConverter";
+import {
+  cleanUp,
+  readKml,
+  saveFolderStructure,
+  savePlaces,
+} from "./util/fileIO";
 import { push } from "./util/adb";
 
 // TODOs:
 // bold extension property doesn't work
-// export favorite points (with colors)
+// color by input folder ?
+// points import doesn't work
 // existing tracks are not overriden - remove all first
 
+// CODE:
+// splitFavorites -> reduce (split by type)
+
 (async () => {
-  const tempOutputPath = "C:/Users/Damiano/Desktop/tracks";
+  const tempOutputPath = "C:/Users/Damiano/Desktop";
   const inputFilePath = `C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
-  const deviceOutputPath = `storage/emulated/0/Android/data/net.osmand/files/tracks`;
+  const deviceOutputPath = `storage/emulated/0/Android/data/net.osmand/files`;
 
   if (!inputFilePath) {
     console.error(`-- Cannot find input file: ${inputFilePath} --`);
     return;
   }
 
-  if (existsSync(tempOutputPath)) {
-    console.warn(
-      `-- Temp Output directory ${tempOutputPath} already exists, removing --`
-    );
-    rmSync(tempOutputPath, { recursive: true });
-  }
-
   console.log(`-- Parsing file: ${inputFilePath} --`);
   const kml = readKml(inputFilePath);
 
   console.log(`-- Extracting tracks --`);
-  const trackFolders = extractTracks(kml.kml.Document.Folder, []);
+  const { tracksCatalog, placesCatalog } = extractFavorites(
+    kml.kml.Document.Folder
+  );
 
   console.log(`-- Converting to file contents --`);
-  const outputContents = toOutputFolders(trackFolders);
+  const outputTracks = toOutputTracks(tracksCatalog);
+  const outputPlaces = toOutputPlaces(placesCatalog);
 
-  console.log(`-- Saving ${trackFolders.length} output folders --`);
-  mkdirSync(tempOutputPath);
-  saveFolderStructure(outputContents, tempOutputPath);
+  console.log(`-- Saving ${tracksCatalog.length} output folders --`);
+  const tracksOutputPath = saveFolderStructure(outputTracks, tempOutputPath);
+  const pointsOutputFilePath = savePlaces(outputPlaces, tempOutputPath);
 
   console.log(`-- Moving to device --`);
   try {
-    await push(`${tempOutputPath}/.`, deviceOutputPath);
+    await push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
+    await push(`${pointsOutputFilePath}`, deviceOutputPath);
   } catch (e) {
     console.error(
-      "Couldn't push files to device. Make sure all subfolders already exist and their names do not contain UTF-8 characters"
+      "Couldn't push files to device. Make sure all subfolders already exist"
     );
-    console.error(e);
+    e && e instanceof Error && console.error(e.message);
   }
 
   console.log(`-- Cleaning up --`);
-  rmSync(tempOutputPath, { recursive: true });
+  cleanUp(tracksOutputPath, pointsOutputFilePath);
 
   console.log("-- DONE --");
 })();

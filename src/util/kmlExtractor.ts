@@ -1,53 +1,91 @@
 import latinize from "latinize";
-import { Folder, Placemark, Route } from "../types/inputTypes";
-import { Coord, Track, TrackFolder } from "../types/outputTypes";
+import {
+  CoordString,
+  Folder,
+  Placemark,
+  Point,
+  Route,
+} from "../types/inputTypes";
+import {
+  Coord,
+  Track,
+  Favorites,
+  ParsedCatalog,
+  Place,
+} from "../types/outputTypes";
 import { FileNameIterator } from "./FileNameIterator";
 
-export function extractTracks(
+const untitled = "Untitled";
+
+export function extractFavorites(
   folder: Folder,
-  results: TrackFolder[]
-): TrackFolder[] {
+  results: Favorites = { placesCatalog: [], tracksCatalog: [] }
+): Favorites {
   if (Array.isArray(folder)) {
-    return folder.flatMap((k) => extractTracks(k, results));
-  }
+    folder.reduce((_, f) => extractFavorites(f, results), results);
+  } else {
+    if (folder?.Folder) {
+      extractFavorites(folder.Folder, results);
+    }
 
-  if (folder?.Folder) {
-    return extractTracks(folder.Folder, results);
-  }
+    if (folder?.Placemark) {
+      const { places, tracks } = splitFavorites(folder.Placemark);
+      const catalogName = latinize(folder.name._text);
 
-  if (folder?.Placemark) {
-    const allTracksInFolder = toTracks(folder.Placemark);
+      if (tracks.length) {
+        results.tracksCatalog.push({
+          name: catalogName,
+          content: tracks,
+        });
+      }
 
-    if (allTracksInFolder.length) {
-      const trackFolder: TrackFolder = {
-        name: latinize(folder.name._text),
-        tracks: allTracksInFolder,
-      };
-
-      return [...results, trackFolder];
+      if (places.length) {
+        results.placesCatalog.push({
+          name: catalogName,
+          content: places,
+        });
+      }
     }
   }
 
   return results;
 }
 
-function toTracks(placemarks: Placemark | Placemark[]): Track[] {
+function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
-  const routes = allPlacemarks.filter(isRoute);
-  const fileNameIterator = new FileNameIterator();
+  const visiblePlacemarks = allPlacemarks.filter(isVisible);
 
-  return routes.map<Track>((p) => ({
-    name: fileNameIterator.next(latinize(p.name._text)),
-    coords: parseCoords(p.LineString.coordinates._text),
+  const routes = visiblePlacemarks.filter(isRoute);
+  const points = visiblePlacemarks.filter(isPoint);
+
+  const fileNameIterator = new FileNameIterator();
+  const tracks = routes.map<Track>((r) => ({
+    name: fileNameIterator.next(latinize(r.name?._text ?? untitled)),
+    coords: parseCoords(r.LineString),
   }));
+
+  const places = points.map<Place>((p) => ({
+    name: p.name?._text ?? untitled,
+    coords: parseCoords(p.Point)[0],
+  }));
+
+  return { tracks, places };
+}
+
+function isVisible(placemark: Placemark) {
+  return placemark.visibility?._text !== "0";
 }
 
 function isRoute(placemark: Placemark): placemark is Route {
   return !!placemark.LineString;
 }
 
-function parseCoords(stringCoords: string): Coord[] {
-  const coordTuples = stringCoords
+function isPoint(placemark: Placemark): placemark is Point {
+  return !!placemark.Point;
+}
+
+function parseCoords(rawCoords: CoordString): Coord[] {
+  const coordTuples = rawCoords.coordinates._text
     .replace(/[\n|\t]+/g, "")
     .trim()
     .split(" ");

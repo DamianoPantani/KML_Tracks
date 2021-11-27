@@ -2,17 +2,23 @@ export type StringAttribute = {
   _text: string;
 };
 
-export type LineString = {
+export type CoordString = {
   coordinates: StringAttribute;
 };
 
 export type Placemark = {
-  LineString?: LineString;
-  name: StringAttribute;
+  LineString?: CoordString;
+  Point?: CoordString;
+  name?: StringAttribute;
+  visibility?: StringAttribute;
 };
 
 export type Route = Placemark & {
-  LineString: LineString;
+  LineString: CoordString;
+};
+
+export type Point = Placemark & {
+  Point: CoordString;
 };
 
 export type Folder = KMLStructure | KMLStructure[] | undefined;

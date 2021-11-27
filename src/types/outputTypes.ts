@@ -8,9 +8,19 @@ export type Track = {
   coords: Coord[];
 };
 
-export type TrackFolder = {
+export type Place = {
   name: string;
+  coords: Coord;
+};
+
+export type ParsedCatalog = {
   tracks: Track[];
+  places: Place[];
+};
+
+export type Catalog<T> = {
+  name: string;
+  content: T[];
 };
 
 export type OutputFile = {
@@ -21,4 +31,9 @@ export type OutputFile = {
 export type GpxFolder = {
   name: string;
   files: OutputFile[];
+};
+
+export type Favorites = {
+  tracksCatalog: Catalog<Track>[];
+  placesCatalog: Catalog<Place>[];
 };
