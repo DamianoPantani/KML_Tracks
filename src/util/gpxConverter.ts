@@ -7,10 +7,10 @@ import {
 } from "../types/outputTypes";
 
 const availableColors = [
-  "#ff0000",
   "#a71de1",
   "#f52887",
   "#2ec6ff",
+  "#ff0000",
   "#4e4eff",
   "#ff7200",
 ];

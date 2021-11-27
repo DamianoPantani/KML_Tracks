@@ -1,4 +1,4 @@
-import { readdirSync, existsSync, mkdirSync, rmSync } from "fs";
+import { existsSync, mkdirSync, rmSync } from "fs";
 import { extractTracks } from "./util/kmlExtractor";
 import { toOutputFolders } from "./util/gpxConverter";
 import { readKml, saveFolderStructure } from "./util/fileIO";
@@ -7,6 +7,7 @@ import { push } from "./util/adb";
 // TODOs:
 // bold extension property doesn't work
 // export favorite points (with colors)
+// existing tracks are not overriden - remove all first
 
 (async () => {
   const tempOutputPath = "C:/Users/Damiano/Desktop/tracks";

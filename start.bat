@@ -1,2 +1,1 @@
-node dist
-pause
+npm start & pause

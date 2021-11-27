@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "swc src -d dist",
-    "start": "npm run build && SET NODE_ENV=production & node --experimental-modules --es-module-specifier-resolution=node dist/index.js"
+    "buildAndStart": "npm run build && npm run start",
+    "start": "node --experimental-modules --es-module-specifier-resolution=node dist/index.js"
   },
   "author": "",
   "license": "ISC",
