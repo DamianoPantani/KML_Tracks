@@ -1,12 +1,3 @@
-import {
-  Coord,
-  GpxFolder,
-  OutputFile,
-  Track,
-  Place,
-  Catalog,
-} from "../types/outputTypes";
-
 export function toOutputTracks(inputFolders: Catalog<Track>[]): GpxFolder[] {
   return inputFolders.map((f) => {
     return {
@@ -28,8 +19,14 @@ function toTrackGpx(track: Track, color: string): OutputFile {
 <gpx version="1.0" creator="GPSBabel - https://www.gpsbabel.org" xmlns="http://www.topografix.com/GPX/1/0">
   <trk>
     <name>${track.name}</name>
-    <trkseg>
-      ${track.coords.map(toTrkpt).join("")}
+    <trkseg>${track.coords
+      .map(
+        (c) => `
+      <trkpt lat="${c.lat}" lon="${c.lon}">
+        <ele>0.000</ele>
+      </trkpt>`
+      )
+      .join("")}
     </trkseg>
   </trk>
   <extensions>
@@ -48,13 +45,6 @@ function toTrackGpx(track: Track, color: string): OutputFile {
     name: `${track.name}.gpx`,
     content,
   };
-}
-
-function toTrkpt(coord: Coord): string {
-  return `
-      <trkpt lat="${coord.lat}" lon="${coord.lon}">
-        <ele>0.000</ele>
-      </trkpt>`;
 }
 
 function toPlacesGpx(catalog: Catalog<Place>[]): string {

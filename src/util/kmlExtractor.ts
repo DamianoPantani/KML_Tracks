@@ -1,39 +1,8 @@
 import latinize from "latinize";
-import {
-  CoordString,
-  Folder,
-  GroupedPlacemarks,
-  Placemark,
-  Point,
-  Route,
-} from "../types/inputTypes";
-import {
-  Coord,
-  Track,
-  Favorites,
-  ParsedCatalog,
-  Place,
-} from "../types/outputTypes";
 import { FileNameIterator } from "./FileNameIterator";
+import { getColor, getIcon } from "./style";
 
-const untitled = "Untitled";
-
-const defaultColor = "#eecc00";
-const colorsByCategory: Record<string, string | undefined> = {
-  "Miejsca - okolice": "#14acca",
-  "Miejsca - Polska": "#aa0000",
-  "Miejsca - Polska - latwo dostepne": defaultColor,
-  "Moto - Polska": "#00aa22",
-  "Moto - trasy": "#ff2288",
-  Rower: "#6622aa",
-  "Slabe drogi": "#880000",
-};
-
-const iconByCategory: Record<string, string | undefined> = {
-  "Moto - Polska": "special_motorcycle",
-  Rower: "special_bicycle",
-};
-
+// recursive. gets list of folders and their contents
 export function extractFavorites(
   folder: Folder,
   results: Favorites = { placesCatalog: [], tracksCatalog: [] }
@@ -54,7 +23,7 @@ export function extractFavorites(
           name: catalogName,
           content: tracks,
           icon: "",
-          color: colorsByCategory[catalogName] ?? defaultColor,
+          color: getColor(catalogName),
         });
       }
 
@@ -62,8 +31,8 @@ export function extractFavorites(
         results.placesCatalog.push({
           name: catalogName,
           content: places,
-          icon: iconByCategory[catalogName] ?? "special_marker",
-          color: colorsByCategory[catalogName] ?? defaultColor,
+          icon: getIcon(catalogName),
+          color: getColor(catalogName),
         });
       }
     }
@@ -79,6 +48,7 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const { routes, points } = allPlacemarks
     .filter(isVisible)
     .reduce(splitByType, placemarkGroups);
+  const untitled = "Untitled";
 
   const tracks = routes.map<Track>((r) => ({
     name: fileNameIterator.next(latinize(r.name?._text ?? untitled)),

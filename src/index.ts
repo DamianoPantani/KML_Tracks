@@ -11,12 +11,12 @@ import { push, stopApp } from "./util/adb";
 // TODOs:
 // tracks are hidden by default
 // you have to manually remove points / tracks beforehand - https://github.com/osmandapp/Osmand/issues/2750#issuecomment-981074188
-// refactor
 
 (() => {
   const tempOutputPath = "C:/Users/Damiano/Desktop";
-  const inputFilePath = `C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
-  const deviceOutputPath = `storage/emulated/0/Android/data/net.osmand/files`;
+  const inputFilePath =
+    "C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml";
+  const deviceOutputPath = "storage/emulated/0/Android/data/net.osmand/files";
 
   if (!inputFilePath) {
     console.error(`-- Cannot find input file: ${inputFilePath} --`);
@@ -35,12 +35,13 @@ import { push, stopApp } from "./util/adb";
   const outputTracks = toOutputTracks(tracksCatalog);
   const outputPlaces = toOutputPlaces(placesCatalog);
 
-  console.log(`-- Saving ${tracksCatalog.length} output folders --`);
+  console.log(`-- Saving ${tracksCatalog.length} output track folders --`);
   const tracksOutputPath = saveFolderStructure(outputTracks, tempOutputPath);
+  console.log(`-- Saving points file --`);
   const pointsOutputFilePath = savePlaces(outputPlaces, tempOutputPath);
 
-  console.log(`-- Moving to device --`);
   try {
+    console.log(`-- Moving to device --`);
     stopApp("net.osmand");
     push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
     push(pointsOutputFilePath, deviceOutputPath);

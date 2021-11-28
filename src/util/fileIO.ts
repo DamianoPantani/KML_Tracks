@@ -6,32 +6,19 @@ import {
   rmSync,
   writeFileSync,
 } from "fs";
-import JSZip from "jszip";
 import { xml2json } from "xml-js";
-import { KML } from "../types/inputTypes";
-import { GpxFolder, OutputFile } from "../types/outputTypes";
 
-export function readKml(inputFilePath: string): KML {
-  const fullKml = readFileSync(inputFilePath, "utf8");
-  return JSON.parse(xml2json(fullKml, { compact: true }));
-}
+// files specific utils:
 
 export function cleanUp(...paths: string[]) {
   paths.forEach((p) => rmSync(p, { recursive: true }));
 }
 
-export async function saveTracksArchives(
-  trackFolder: GpxFolder,
-  path: string
-): Promise<void> {
-  const outuptArchive = `${path}/${trackFolder.name}.zip`;
-  const zip = new JSZip();
+// app specific utils:
 
-  trackFolder.files.forEach((f) => zip.file(f.name, f.content));
-
-  const archive = await zip.generateAsync({ type: "nodebuffer" });
-
-  createWriteStream(outuptArchive).write(archive);
+export function readKml(inputFilePath: string): KML {
+  const fullKml = readFileSync(inputFilePath, "utf8");
+  return JSON.parse(xml2json(fullKml, { compact: true }));
 }
 
 export function saveFolderStructure(trackFolders: GpxFolder[], path: string) {
