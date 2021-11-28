@@ -6,16 +6,12 @@ import {
   saveFolderStructure,
   savePlaces,
 } from "./util/fileIO";
-import { push } from "./util/adb";
+import { push, stopApp } from "./util/adb";
 
 // TODOs:
 // bold extension property doesn't work
-// color by input folder ?
-// points import doesn't work
-// existing tracks are not overriden - remove all first
-
-// CODE:
-// splitFavorites -> reduce (split by type)
+// you have to manually remove points / tracks beforehand
+// refactor
 
 (async () => {
   const tempOutputPath = "C:/Users/Damiano/Desktop";
@@ -45,13 +41,13 @@ import { push } from "./util/adb";
 
   console.log(`-- Moving to device --`);
   try {
-    await push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
-    await push(`${pointsOutputFilePath}`, deviceOutputPath);
+    stopApp("net.osmand");
+    push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
+    push(pointsOutputFilePath, deviceOutputPath);
   } catch (e) {
     console.error(
       "Couldn't push files to device. Make sure all subfolders already exist"
     );
-    e && e instanceof Error && console.error(e.message);
   }
 
   console.log(`-- Cleaning up --`);

@@ -2,6 +2,7 @@ import latinize from "latinize";
 import {
   CoordString,
   Folder,
+  GroupedPlacemarks,
   Placemark,
   Point,
   Route,
@@ -16,6 +17,22 @@ import {
 import { FileNameIterator } from "./FileNameIterator";
 
 const untitled = "Untitled";
+
+const defaultColor = "#eecc00";
+const colorsByCategory: Record<string, string | undefined> = {
+  "Miejsca - okolice": "#14acca",
+  "Miejsca - Polska": "#aa0000",
+  "Miejsca - Polska - latwo dostepne": defaultColor,
+  "Moto - Polska": "#00aa22",
+  "Moto - trasy": "#ff2288",
+  Rower: "#6622aa",
+  "Slabe drogi": "#880000",
+};
+
+const iconByCategory: Record<string, string | undefined> = {
+  "Moto - Polska": "special_motorcycle",
+  Rower: "special_bicycle",
+};
 
 export function extractFavorites(
   folder: Folder,
@@ -36,6 +53,8 @@ export function extractFavorites(
         results.tracksCatalog.push({
           name: catalogName,
           content: tracks,
+          icon: "",
+          color: colorsByCategory[catalogName] ?? defaultColor,
         });
       }
 
@@ -43,6 +62,8 @@ export function extractFavorites(
         results.placesCatalog.push({
           name: catalogName,
           content: places,
+          icon: iconByCategory[catalogName] ?? "special_marker",
+          color: colorsByCategory[catalogName] ?? defaultColor,
         });
       }
     }
@@ -52,13 +73,13 @@ export function extractFavorites(
 }
 
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
-  const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
-  const visiblePlacemarks = allPlacemarks.filter(isVisible);
-
-  const routes = visiblePlacemarks.filter(isRoute);
-  const points = visiblePlacemarks.filter(isPoint);
-
   const fileNameIterator = new FileNameIterator();
+  const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
+  const placemarkGroups: GroupedPlacemarks = { routes: [], points: [] };
+  const { routes, points } = allPlacemarks
+    .filter(isVisible)
+    .reduce(splitByType, placemarkGroups);
+
   const tracks = routes.map<Track>((r) => ({
     name: fileNameIterator.next(latinize(r.name?._text ?? untitled)),
     coords: parseCoords(r.LineString),
@@ -70,6 +91,12 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   }));
 
   return { tracks, places };
+}
+
+function splitByType(results: GroupedPlacemarks, placemark: Placemark) {
+  isRoute(placemark) && results.routes.push(placemark);
+  isPoint(placemark) && results.points.push(placemark);
+  return results;
 }
 
 function isVisible(placemark: Placemark) {

@@ -21,6 +21,8 @@ export type ParsedCatalog = {
 export type Catalog<T> = {
   name: string;
   content: T[];
+  icon: string;
+  color: string;
 };
 
 export type OutputFile = {

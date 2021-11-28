@@ -7,21 +7,11 @@ import {
   Catalog,
 } from "../types/outputTypes";
 
-const availableColors = [
-  "#a71de1",
-  "#f52887",
-  "#2ec6ff",
-  "#ff0000",
-  "#4e4eff",
-  "#ff7200",
-];
-
 export function toOutputTracks(inputFolders: Catalog<Track>[]): GpxFolder[] {
-  return inputFolders.map((f, i) => {
-    const color = availableColors[i % availableColors.length];
+  return inputFolders.map((f) => {
     return {
       name: f.name,
-      files: f.content.map((t) => toTrackGpx(t, color)),
+      files: f.content.map((t) => toTrackGpx(t, f.color)),
     };
   });
 }
@@ -71,30 +61,27 @@ function toTrkpt(coord: Coord): string {
 
 function toPlacesGpx(catalog: Catalog<Place>[]): string {
   return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-  <gpx version="1.1" creator="OsmAnd 4.0.8" xmlns="http://www.topografix.com/GPX/1/1" xmlns:osmand="https://osmand.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
-    <metadata>
-      <name>favourites</name>
-    </metadata>
-    ${catalog
-      .map((catalog, i) =>
-        catalog.content
-          .map(
-            (place) => `
-    <wpt lat="${place.coords.lat}" lon="${place.coords.lon}">
-      <ele>0</ele>
-      <name>${place.name}</name>
-      <type>${catalog.name}</type>
-      <extensions>
-        <osmand:background>circle</osmand:background>
-        <osmand:color>${
-          availableColors[i % availableColors.length]
-        }</osmand:color>
-      </extensions>
-    </wpt>
-    `
-          )
-          .join("")
-      )
-      .join("")}
-  </gpx>`;
+<gpx version="1.1" creator="OsmAnd 4.0.8" xmlns="http://www.topografix.com/GPX/1/1" xmlns:osmand="https://osmand.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>favourites</name>
+  </metadata>${catalog
+    .map((catalog) =>
+      catalog.content
+        .map(
+          (place) => `
+  <wpt lat="${place.coords.lat}" lon="${place.coords.lon}">
+    <ele>0</ele>
+    <name>${place.name}</name>
+    <type>${catalog.name}</type>
+    <extensions>
+      <osmand:icon>${catalog.icon}</osmand:icon>
+      <osmand:background>circle</osmand:background>
+      <osmand:color>${catalog.color}</osmand:color>
+    </extensions>
+  </wpt>`
+        )
+        .join("")
+    )
+    .join("")}
+</gpx>`;
 }

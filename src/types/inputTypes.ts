@@ -13,6 +13,11 @@ export type Placemark = {
   visibility?: StringAttribute;
 };
 
+export type GroupedPlacemarks = {
+  routes: Route[];
+  points: Point[];
+};
+
 export type Route = Placemark & {
   LineString: CoordString;
 };
