@@ -9,11 +9,11 @@ import {
 import { push, stopApp } from "./util/adb";
 
 // TODOs:
-// bold extension property doesn't work
-// you have to manually remove points / tracks beforehand
+// tracks are hidden by default
+// you have to manually remove points / tracks beforehand - https://github.com/osmandapp/Osmand/issues/2750#issuecomment-981074188
 // refactor
 
-(async () => {
+(() => {
   const tempOutputPath = "C:/Users/Damiano/Desktop";
   const inputFilePath = `C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
   const deviceOutputPath = `storage/emulated/0/Android/data/net.osmand/files`;

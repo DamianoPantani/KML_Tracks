@@ -27,22 +27,20 @@ function toTrackGpx(track: Track, color: string): OutputFile {
   const content = `<?xml version="1.0" encoding="UTF-8"?>
 <gpx version="1.0" creator="GPSBabel - https://www.gpsbabel.org" xmlns="http://www.topografix.com/GPX/1/0">
   <trk>
-  <name>${track.name}</name>
-  <trkseg>
-    ${track.coords.map(toTrkpt).join("")}
-  </trkseg>
-  <extensions>
-  </extensions>
+    <name>${track.name}</name>
+    <trkseg>
+      ${track.coords.map(toTrkpt).join("")}
+    </trkseg>
+  </trk>
   <extensions>
     <show_arrows>false</show_arrows>
     <color>${color}</color>
     <split_type>no_split</split_type>
     <split_interval>0.0</split_interval>
-    <width>11</width>
+    <width>7</width>
     <show_start_finish>false</show_start_finish>
     <coloring_type>solid</coloring_type>
   </extensions>
-  </trk>
 </gpx>
   `;
 
@@ -71,6 +69,7 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
           (place) => `
   <wpt lat="${place.coords.lat}" lon="${place.coords.lon}">
     <ele>0</ele>
+    <time>${new Date().toISOString()}</time>
     <name>${place.name}</name>
     <type>${catalog.name}</type>
     <extensions>
