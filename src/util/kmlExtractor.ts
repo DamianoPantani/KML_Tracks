@@ -5,18 +5,31 @@ import { getColor, getIcon } from "./style";
 // recursive. gets list of folders and their contents
 export function extractFavorites(
   folder: Folder,
+  isNested?: boolean,
+  folderNameSuffix = "",
   results: Favorites = { placesCatalog: [], tracksCatalog: [] }
 ): Favorites {
   if (Array.isArray(folder)) {
-    folder.reduce((_, f) => extractFavorites(f, results), results);
+    folder.reduce(
+      (_, f) => extractFavorites(f, true, folderNameSuffix, results),
+      results
+    );
   } else {
+    const thisFolderName = folder?.name._text ?? "";
+    // skip root folder name ("My Places")
+    const nestedFolderName = isNested
+      ? folderNameSuffix
+        ? `${folderNameSuffix} - ${thisFolderName}`
+        : thisFolderName
+      : "";
+
     if (folder?.Folder) {
-      extractFavorites(folder.Folder, results);
+      extractFavorites(folder.Folder, true, nestedFolderName, results);
     }
 
     if (folder?.Placemark) {
       const { places, tracks } = splitFavorites(folder.Placemark);
-      const catalogName = latinize(folder.name._text);
+      const catalogName = latinize(nestedFolderName);
 
       if (tracks.length) {
         results.tracksCatalog.push({

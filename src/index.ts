@@ -47,7 +47,7 @@ import { push, stopApp } from "./util/adb";
     push(pointsOutputFilePath, deviceOutputPath);
   } catch (e) {
     console.error(
-      "Couldn't push files to device. Make sure all subfolders already exist"
+      "Couldn't push files to device. Make sure all subfolders already exist. If not, move generated tracks manually"
     );
   }
 
