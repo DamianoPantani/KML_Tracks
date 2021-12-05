@@ -24,9 +24,7 @@ export function readKml(inputFilePath: string): KML {
 export function saveFolderStructure(trackFolders: GpxFolder[], path: string) {
   const outputPath = `${path}/tracks`;
   if (existsSync(outputPath)) {
-    console.warn(
-      `-- Temp Output directory ${outputPath} already exists, removing --`
-    );
+    console.warn(`-- Temp Output directory ${outputPath} already exists, removing --`);
     rmSync(outputPath, { recursive: true });
   }
 

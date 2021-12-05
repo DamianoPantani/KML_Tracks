@@ -1,11 +1,6 @@
 import { extractFavorites } from "./util/kmlExtractor";
 import { toOutputTracks, toOutputPlaces } from "./util/gpxConverter";
-import {
-  cleanUp,
-  readKml,
-  saveFolderStructure,
-  savePlaces,
-} from "./util/fileIO";
+import { cleanUp, readKml, saveFolderStructure, savePlaces } from "./util/fileIO";
 import { push, stopApp } from "./util/adb";
 
 // TODOs:
@@ -27,9 +22,7 @@ import { push, stopApp } from "./util/adb";
   const kml = readKml(inputFilePath);
 
   console.log(`-- Extracting tracks --`);
-  const { tracksCatalog, placesCatalog } = extractFavorites(
-    kml.kml.Document.Folder
-  );
+  const { tracksCatalog, placesCatalog } = extractFavorites(kml.kml.Document.Folder);
 
   console.log(`-- Converting to file contents --`);
   const outputTracks = toOutputTracks(tracksCatalog);

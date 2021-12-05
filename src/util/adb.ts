@@ -14,9 +14,7 @@ export function stopApp(packageName: string) {
 }
 
 export function startApp(packageName: string) {
-  execSync(
-    `adb shell monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`
-  );
+  execSync(`adb shell monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`);
 }
 
 function shellPath(path: string): string {
