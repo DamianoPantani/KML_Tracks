@@ -54,6 +54,31 @@ export function extractFavorites(
   return results;
 }
 
+// recursive. gets list of folders and their contents
+export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
+  const createNewCatalog = (name: string): Catalog<Place> => ({
+    name,
+    icon: "",
+    color: "",
+    content: [],
+  });
+
+  const catalogs = folder.reduce<Record<string, Catalog<Place>>>(
+    (acc, { _attributes }) => {
+      const { lat, lng, nazwa, typ } = _attributes;
+      const newPlace: Place = { name: nazwa, coords: { lat, lon: lng } };
+      const catalog = acc[typ] ?? createNewCatalog(typ);
+
+      catalog.content.push(newPlace);
+      acc[typ] = catalog;
+      return acc;
+    },
+    {}
+  );
+
+  return { placesCatalog: Object.values(catalogs), tracksCatalog: [] };
+}
+
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const tracksFileNameIterator = new FileNameIterator();
   const placesFileNameIterator = new FileNameIterator();

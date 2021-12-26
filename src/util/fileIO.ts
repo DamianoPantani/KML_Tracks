@@ -16,7 +16,7 @@ export function cleanUp(...paths: string[]) {
 
 // app specific utils:
 
-export function readKml(inputFilePath: string): KML {
+export function readKml<T = KML>(inputFilePath: string): T {
   const fullKml = readFileSync(inputFilePath, "utf8");
   return JSON.parse(xml2json(fullKml, { compact: true }));
 }

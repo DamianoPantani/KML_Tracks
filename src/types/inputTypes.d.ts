@@ -6,6 +6,12 @@ type KML = {
   };
 };
 
+type MOKml = {
+  znaczniki: {
+    znacznik: MOPoint[];
+  };
+};
+
 type KMLStructure = {
   Folder: Folder;
   name: StringAttribute;
@@ -32,6 +38,15 @@ type Point = Placemark & {
 };
 
 // attributes
+
+type MOPoint = {
+  _attributes: {
+    lat: string;
+    lng: string;
+    nazwa: string;
+    typ: string;
+  };
+};
 
 type StringAttribute = {
   _text: string;

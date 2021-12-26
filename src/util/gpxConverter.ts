@@ -7,10 +7,17 @@ export function toOutputTracks(inputFolders: Catalog<Track>[]): GpxFolder[] {
   });
 }
 
-export function toOutputPlaces(inputFolders: Catalog<Place>[]): OutputFile {
+export function toOutputGPXPlaces(inputFolders: Catalog<Place>[]): OutputFile {
   return {
     name: "favourites.gpx",
     content: toPlacesGpx(inputFolders),
+  };
+}
+
+export function toOutputKMLPlaces(inputFolders: Catalog<Place>[]): OutputFile {
+  return {
+    name: "points.kml",
+    content: toPlacesKml(inputFolders),
   };
 }
 
@@ -73,4 +80,33 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
     )
     .join("")}
 </gpx>`;
+}
+
+function toPlacesKml(catalog: Catalog<Place>[]): string {
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Places.kml</name>
+	<Folder>
+		<name>Places</name>${catalog
+      .map(
+        (category) => `
+		<Folder>
+			<name>${category.name}</name>${category.content
+          .map(
+            (point) => `
+        <Placemark>
+				  <name>${point.name.replaceAll("&", "'n")}</name>
+				  <Point>
+					  <coordinates>${point.coords.lon},${point.coords.lat},0</coordinates>
+				  </Point>
+			  </Placemark>`
+          )
+          .join("")}
+		</Folder>`
+      )
+      .join("")}
+	</Folder>
+</Document>
+</kml>`;
 }
