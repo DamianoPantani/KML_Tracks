@@ -55,7 +55,8 @@ export function extractFavorites(
 }
 
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
-  const fileNameIterator = new FileNameIterator();
+  const tracksFileNameIterator = new FileNameIterator();
+  const placesFileNameIterator = new FileNameIterator();
   const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
   const placemarkGroups: GroupedPlacemarks = { routes: [], points: [] };
   const { routes, points } = allPlacemarks
@@ -64,12 +65,12 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const untitled = "Untitled";
 
   const tracks = routes.map<Track>((r) => ({
-    name: fileNameIterator.next(latinize(r.name?._text ?? untitled)),
+    name: tracksFileNameIterator.next(latinize(r.name?._text ?? untitled)),
     coords: parseCoords(r.LineString),
   }));
 
   const places = points.map<Place>((p) => ({
-    name: p.name?._text ?? untitled,
+    name: placesFileNameIterator.next(p.name?._text ?? untitled),
     coords: parseCoords(p.Point)[0],
   }));
 
