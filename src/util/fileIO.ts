@@ -1,11 +1,4 @@
-import {
-  createWriteStream,
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { xml2json } from "xml-js";
 
 // files specific utils:
@@ -16,9 +9,13 @@ export function cleanUp(...paths: string[]) {
 
 // app specific utils:
 
-export function readKml<T = KML>(inputFilePath: string): T {
+export function readFileAsKml<T = KML>(inputFilePath: string): T {
   const fullKml = readFileSync(inputFilePath, "utf8");
-  return JSON.parse(xml2json(fullKml, { compact: true }));
+  return toKml(fullKml);
+}
+
+export function toKml<T = KML>(inputString: string): T {
+  return JSON.parse(xml2json(inputString, { compact: true }));
 }
 
 export function saveFolderStructure(trackFolders: GpxFolder[], path: string) {
