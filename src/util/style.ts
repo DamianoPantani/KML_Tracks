@@ -1,24 +1,34 @@
-export function getColor(category: string): string {
-  return styleByCategory[category]?.color ?? defaultStyle.color;
-}
-
-export function getIcon(category: string): string {
-  return styleByCategory[category]?.icon ?? defaultStyle.icon;
-}
+import { ConfigIniParser } from "config-ini-parser";
 
 // IMPORTANT: OsmAnd uses #AARRGGBB color format
 
-const defaultStyle: Required<Style> = { color: "#ddbb00", icon: "special_marker" };
+const defaultStyle: Style = { color: "#ddbb00", icon: "special_marker" };
 
-const styleByCategory: Record<string, Style | undefined> = {
-  Okolice: { color: "#14acca" },
-  "Polska - Trudne - Konieczne": { color: "#990000", icon: "special_heart" },
-  "Polska - Trudne - Warte": { color: "#bbff0000" },
-  "Polska - Latwe - Konieczne": { icon: "special_heart" },
-  "Polska - Latwe - Warte": { color: "#bbffee00" },
-  "Polska - Moto - Konieczne": { color: "#008811", icon: "special_motorcycle" },
-  "Polska - Moto - Warte": { color: "#bb00aa22", icon: "special_enduro_motorcycle" },
-  "Polska - Trasy": { color: "#ff2288", icon: "special_motorcycle" },
-  Rower: { color: "#6622aa", icon: "special_bicycle" },
-  "Slabe drogi": { color: "#880000" },
-};
+export function getStyle(folder: KMLStructure): Style {
+  const { name, description } = folder;
+  const dirName = name._text;
+
+  if (description) {
+    const iniParser = new ConfigIniParser().parse(description._text);
+    let color = iniParser.getOptionFromDefaultSection("color", "") as string;
+    let icon = iniParser.getOptionFromDefaultSection("icon", "") as string;
+
+    if (!color) {
+      console.warn(`Folder '${dirName}' doesn't contain color metadata. Using default`);
+      color = defaultStyle.color;
+    }
+
+    if (!icon) {
+      console.warn(`Folder '${dirName}' doesn't contain icon metadata. Using default`);
+      icon = defaultStyle.icon;
+    }
+
+    return { color, icon };
+  }
+
+  console.warn(
+    `Folder '${dirName}' doesn't contain 'description' tag with style metadata. Using default`
+  );
+
+  return defaultStyle;
+}

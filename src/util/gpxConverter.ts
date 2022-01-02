@@ -68,7 +68,7 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
     <ele>0</ele>
     <time>${new Date().toISOString()}</time>
     <name>${place.name}</name>
-    <type>${catalog.name}</type>
+    <type>To visit</type>
     <extensions>
       <osmand:icon>${catalog.icon}</osmand:icon>
       <osmand:background>circle</osmand:background>

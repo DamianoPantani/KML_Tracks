@@ -45,6 +45,6 @@ type OutputFile = {
 };
 
 type Style = {
-  icon?: string;
-  color?: string;
+  icon: string;
+  color: string;
 };

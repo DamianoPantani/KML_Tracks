@@ -1,6 +1,6 @@
 import latinize from "latinize";
-import { FileNameIterator } from "./FileNameIterator";
-import { getColor, getIcon } from "./style";
+import { NameIterator } from "./NameIterator";
+import { getStyle } from "./style";
 
 // recursive. gets list of folders and their contents
 export function extractFavorites(
@@ -31,12 +31,18 @@ export function extractFavorites(
       const { places, tracks } = splitFavorites(folder.Placemark);
       const catalogName = latinize(nestedFolderName);
 
+      if (!tracks.length && !places.length) {
+        return results;
+      }
+
+      const { icon, color } = getStyle(folder);
+
       if (tracks.length) {
         results.tracksCatalog.push({
           name: catalogName,
           content: tracks,
-          icon: "",
-          color: getColor(catalogName),
+          icon,
+          color,
         });
       }
 
@@ -44,8 +50,8 @@ export function extractFavorites(
         results.placesCatalog.push({
           name: catalogName,
           content: places,
-          icon: getIcon(catalogName),
-          color: getColor(catalogName),
+          icon,
+          color,
         });
       }
     }
@@ -80,8 +86,8 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
 }
 
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
-  const tracksFileNameIterator = new FileNameIterator();
-  const placesFileNameIterator = new FileNameIterator();
+  const tracksNameIterator = new NameIterator();
+  const placesNameIterator = new NameIterator();
   const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
   const placemarkGroups: GroupedPlacemarks = { routes: [], points: [] };
   const { routes, points } = allPlacemarks
@@ -90,12 +96,12 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const untitled = "Untitled";
 
   const tracks = routes.map<Track>((r) => ({
-    name: tracksFileNameIterator.next(latinize(r.name?._text ?? untitled)),
+    name: tracksNameIterator.next(latinize(r.name?._text ?? untitled)),
     coords: parseCoords(r.LineString),
   }));
 
   const places = points.map<Place>((p) => ({
-    name: placesFileNameIterator.next(p.name?._text ?? untitled),
+    name: placesNameIterator.next(p.name?._text ?? untitled),
     coords: parseCoords(p.Point)[0],
   }));
 

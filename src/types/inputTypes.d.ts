@@ -15,6 +15,7 @@ type MOKml = {
 type KMLStructure = {
   Folder: Folder;
   name: StringAttribute;
+  description?: StringAttribute;
   Placemark?: Placemark | Placemark[];
 };
 
