@@ -1,6 +1,8 @@
 import latinize from "latinize";
 import { NameIterator } from "./NameIterator";
-import { getStyle } from "./style";
+import { StyleParser } from "./style";
+
+const nameIterator = new NameIterator();
 
 // recursive. gets list of folders and their contents
 export function extractFavorites(
@@ -35,7 +37,7 @@ export function extractFavorites(
         return results;
       }
 
-      const { icon, color } = getStyle(folder);
+      const { icon, color, order } = new StyleParser(folder).parseStyle();
 
       if (tracks.length) {
         results.tracksCatalog.push({
@@ -43,6 +45,7 @@ export function extractFavorites(
           content: tracks,
           icon,
           color,
+          order,
         });
       }
 
@@ -52,6 +55,7 @@ export function extractFavorites(
           content: places,
           icon,
           color,
+          order,
         });
       }
     }
@@ -66,6 +70,7 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
     name,
     icon: "",
     color: "",
+    order: "",
     content: [],
   });
 
@@ -86,8 +91,6 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
 }
 
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
-  const tracksNameIterator = new NameIterator();
-  const placesNameIterator = new NameIterator();
   const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
   const placemarkGroups: GroupedPlacemarks = { routes: [], points: [] };
   const { routes, points } = allPlacemarks
@@ -96,12 +99,12 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const untitled = "Untitled";
 
   const tracks = routes.map<Track>((r) => ({
-    name: tracksNameIterator.next(latinize(r.name?._text ?? untitled)),
+    name: nameIterator.next(latinize(r.name?._text ?? untitled)),
     coords: parseCoords(r.LineString),
   }));
 
   const places = points.map<Place>((p) => ({
-    name: placesNameIterator.next(p.name?._text ?? untitled),
+    name: nameIterator.next(p.name?._text ?? untitled),
     coords: parseCoords(p.Point)[0],
   }));
 

@@ -1,34 +1,50 @@
 import { ConfigIniParser } from "config-ini-parser";
 
 // IMPORTANT: OsmAnd uses #AARRGGBB color format
+export class StyleParser {
+  // NOTE: must contain lower case values
+  private static DEFAULT_STYLE: Style = {
+    color: "#ddbb00",
+    icon: "special_marker",
+    order: "0",
+  };
 
-const defaultStyle: Style = { color: "#ddbb00", icon: "special_marker" };
+  private folder: KMLStructure;
+  private dirName: string;
 
-export function getStyle(folder: KMLStructure): Style {
-  const { name, description } = folder;
-  const dirName = name._text;
-
-  if (description) {
-    const iniParser = new ConfigIniParser().parse(description._text);
-    let color = iniParser.getOptionFromDefaultSection("color", "") as string;
-    let icon = iniParser.getOptionFromDefaultSection("icon", "") as string;
-
-    if (!color) {
-      console.warn(`Folder '${dirName}' doesn't contain color metadata. Using default`);
-      color = defaultStyle.color;
-    }
-
-    if (!icon) {
-      console.warn(`Folder '${dirName}' doesn't contain icon metadata. Using default`);
-      icon = defaultStyle.icon;
-    }
-
-    return { color, icon };
+  constructor(folder: KMLStructure) {
+    this.folder = folder;
+    this.dirName = folder.name._text;
   }
 
-  console.warn(
-    `Folder '${dirName}' doesn't contain 'description' tag with style metadata. Using default`
-  );
+  private get(parser: ConfigIniParser, key: keyof Style): string {
+    const value = parser.getOptionFromDefaultSection(key, "") as string;
+    if (!value) {
+      console.warn(
+        `Folder '${this.dirName}' doesn't contain '${key}' metadata. Using default`
+      );
+      return StyleParser.DEFAULT_STYLE[key];
+    }
 
-  return defaultStyle;
+    return value.toLowerCase();
+  }
+
+  parseStyle(): Style {
+    const configText = this.folder.description?._text;
+
+    if (!configText) {
+      console.warn(
+        `Folder '${this.dirName}' doesn't contain 'description' tag with style metadata. Using default`
+      );
+      return StyleParser.DEFAULT_STYLE;
+    }
+
+    const configParser = new ConfigIniParser().parse(configText);
+
+    return {
+      color: this.get(configParser, "color"),
+      icon: this.get(configParser, "icon"),
+      order: this.get(configParser, "order"),
+    };
+  }
 }

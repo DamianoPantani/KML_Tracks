@@ -2,6 +2,7 @@ import { extractFavorites } from "./util/kmlExtractor";
 import { toOutputTracks, toOutputGPXPlaces } from "./util/gpxConverter";
 import { cleanUp, readFileAsKml, saveFolderStructure, savePlaces } from "./util/fileIO";
 import { push, stopApp } from "./util/adb";
+import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 
 // TODOs:
 // tracks are hidden by default
@@ -23,10 +24,11 @@ import { push, stopApp } from "./util/adb";
 
   console.log(`-- Extracting tracks --`);
   const { tracksCatalog, placesCatalog } = extractFavorites(kml.kml.Document.Folder);
+  const orderedPlacesCatalog = placesCatalog.sort(byOrderAttribute).map(renameByOrder);
 
   console.log(`-- Converting to file contents --`);
   const outputTracks = toOutputTracks(tracksCatalog);
-  const outputPlaces = toOutputGPXPlaces(placesCatalog);
+  const outputPlaces = toOutputGPXPlaces(orderedPlacesCatalog);
 
   console.log(`-- Saving ${tracksCatalog.length} output track folders --`);
   const tracksOutputPath = saveFolderStructure(outputTracks, tempOutputPath);

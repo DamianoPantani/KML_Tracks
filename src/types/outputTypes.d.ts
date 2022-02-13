@@ -10,6 +10,7 @@ type Catalog<T> = {
   content: T[];
   icon: string;
   color: string;
+  order: string;
 };
 
 type Track = {
@@ -47,4 +48,5 @@ type OutputFile = {
 type Style = {
   icon: string;
   color: string;
+  order: string;
 };
