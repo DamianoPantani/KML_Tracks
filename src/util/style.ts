@@ -2,49 +2,49 @@ import { ConfigIniParser } from "config-ini-parser";
 
 // IMPORTANT: OsmAnd uses #AARRGGBB color format
 export class StyleParser {
-  // NOTE: must contain lower case values
   private static DEFAULT_STYLE: Style = {
     color: "#ddbb00",
     icon: "special_marker",
     order: "0",
   };
 
-  private folder: KMLStructure;
-  private dirName: string;
+  private nodeConfig?: string;
+  private nodeName: string;
 
-  constructor(folder: KMLStructure) {
-    this.folder = folder;
-    this.dirName = folder.name._text;
+  constructor(node: KMLNode) {
+    this.nodeConfig = node.description?._text;
+    this.nodeName = node.name._text;
   }
 
-  private get(parser: ConfigIniParser, key: keyof Style): string {
-    const value = parser.getOptionFromDefaultSection(key, "") as string;
-    if (!value) {
+  parseFolderStyle(): Style {
+    const { nodeConfig, nodeName } = this;
+    const prototype = StyleParser.DEFAULT_STYLE;
+
+    if (!nodeConfig) {
       console.warn(
-        `Folder '${this.dirName}' doesn't contain '${key}' metadata. Using default`
+        `Folder '${nodeName}' doesn't contain 'description' tag with style metadata. Using default`
       );
-      return StyleParser.DEFAULT_STYLE[key];
+      return prototype;
     }
 
-    return value.toLowerCase();
-  }
+    const configParser = new ConfigIniParser().parse(nodeConfig);
 
-  parseStyle(): Style {
-    const configText = this.folder.description?._text;
+    return Object.entries(prototype).reduce((style, [key, defaultValue]) => {
+      const styleKey = key as keyof Style;
+      const value = configParser.getOptionFromDefaultSection(styleKey, "") as
+        | string
+        | undefined;
 
-    if (!configText) {
-      console.warn(
-        `Folder '${this.dirName}' doesn't contain 'description' tag with style metadata. Using default`
-      );
-      return StyleParser.DEFAULT_STYLE;
-    }
+      if (value) {
+        style[styleKey] = value;
+      } else {
+        style[styleKey] = defaultValue;
+        console.warn(
+          `Folder '${nodeName}' doesn't contain '${key}' metadata. Using default`
+        );
+      }
 
-    const configParser = new ConfigIniParser().parse(configText);
-
-    return {
-      color: this.get(configParser, "color"),
-      icon: this.get(configParser, "icon"),
-      order: this.get(configParser, "order"),
-    };
+      return style;
+    }, {} as Style);
   }
 }

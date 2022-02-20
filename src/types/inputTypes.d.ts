@@ -12,10 +12,8 @@ type MOKml = {
   };
 };
 
-type KMLStructure = {
+type KMLStructure = KMLNode & {
   Folder: Folder;
-  name: StringAttribute;
-  description?: StringAttribute;
   Placemark?: Placemark | Placemark[];
 };
 
@@ -23,11 +21,9 @@ type Folder = KMLStructure | KMLStructure[] | undefined;
 
 // placemark
 
-type Placemark = {
+type Placemark = KMLNode & {
   LineString?: CoordString;
   Point?: CoordString;
-  name?: StringAttribute;
-  visibility?: StringAttribute;
 };
 
 type Route = Placemark & {
@@ -39,6 +35,12 @@ type Point = Placemark & {
 };
 
 // attributes
+
+type KMLNode = {
+  name: StringAttribute;
+  description?: StringAttribute;
+  visibility?: StringAttribute;
+};
 
 type MOPoint = {
   _attributes: {

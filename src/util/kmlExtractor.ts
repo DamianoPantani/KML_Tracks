@@ -37,7 +37,7 @@ export function extractFavorites(
         return results;
       }
 
-      const { icon, color, order } = new StyleParser(folder).parseStyle();
+      const { icon, color, order } = new StyleParser(folder).parseFolderStyle();
 
       if (tracks.length) {
         results.tracksCatalog.push({
@@ -77,7 +77,11 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
   const catalogs = folder.reduce<Record<string, Catalog<Place>>>(
     (acc, { _attributes }) => {
       const { lat, lng, nazwa, typ } = _attributes;
-      const newPlace: Place = { name: nazwa, coords: { lat, lon: lng } };
+      const newPlace: Place = {
+        name: nazwa,
+        coords: { lat, lon: lng },
+        isEvening: false,
+      };
       const catalog = acc[typ] ?? createNewCatalog(typ);
 
       catalog.content.push(newPlace);
@@ -106,6 +110,7 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const places = points.map<Place>((p) => ({
     name: nameIterator.next(p.name?._text ?? untitled),
     coords: parseCoords(p.Point)[0],
+    isEvening: p.description?._text.includes("evening=1") ?? false, // TODO: reuse StyleParser
   }));
 
   return { tracks, places };

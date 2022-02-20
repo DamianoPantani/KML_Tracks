@@ -21,6 +21,7 @@ type Track = {
 type Place = {
   name: string;
   coords: Coord;
+  isEvening: boolean;
 };
 
 type Coord = {

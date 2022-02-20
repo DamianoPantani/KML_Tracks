@@ -70,8 +70,8 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
     <name>${place.name}</name>
     <type>${catalog.name}</type>
     <extensions>
-      <osmand:icon>${catalog.icon}</osmand:icon>
-      <osmand:background>circle</osmand:background>
+      <osmand:icon>${place.isEvening ? "special_sunset" : catalog.icon}</osmand:icon>
+      <osmand:background>${place.isEvening ? "square" : "circle"}</osmand:background>
       <osmand:color>${catalog.color}</osmand:color>
     </extensions>
   </wpt>`
