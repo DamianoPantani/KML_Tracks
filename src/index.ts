@@ -9,10 +9,11 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 // you have to manually remove points / tracks beforehand - https://github.com/osmandapp/Osmand/issues/2750#issuecomment-981074188
 
 (() => {
+  const targetAppName = "net.osmand.plus"; // OR "net.osmand"
   const tempOutputPath = "C:/Users/Damiano/Desktop";
   const inputFilePath =
     "C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml";
-  const deviceOutputPath = "storage/emulated/0/Android/data/net.osmand/files";
+  const deviceOutputPath = `storage/emulated/0/Android/data/${targetAppName}/files`;
 
   if (!inputFilePath) {
     console.error(`-- Cannot find input file: ${inputFilePath} --`);
@@ -37,12 +38,13 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 
   try {
     console.log(`-- Moving to device --`);
-    stopApp("net.osmand");
+    stopApp(targetAppName);
     push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
     push(pointsOutputFilePath, deviceOutputPath);
   } catch (e) {
+    const dirs = outputTracks.map((f) => f.name).join(", ");
     console.error(
-      "Couldn't push files to device. Make sure all subfolders already exist. If not, move generated tracks manually"
+      `Couldn't push files to device. Make sure all subfolders already exist: (${dirs}). If not, move generated tracks manually`
     );
   }
 
