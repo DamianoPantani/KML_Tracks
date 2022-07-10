@@ -9,7 +9,7 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 // you have to manually remove points / tracks beforehand - https://github.com/osmandapp/Osmand/issues/2750#issuecomment-981074188
 
 (() => {
-  const targetAppName = "net.osmand.plus"; // OR "net.osmand"
+  const targetAppName = "net.osmand"; // OR "net.osmand.plus";
   const tempOutputPath = "C:/Users/Damiano/Desktop";
   const inputFilePath =
     "C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml";
