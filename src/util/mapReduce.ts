@@ -1,7 +1,7 @@
 // SORT
 
 export const byOrderAttribute = (f1: Catalog<Place>, f2: Catalog<Place>): number => {
-  return f2.order.localeCompare(f1.order);
+  return f1.order.localeCompare(f2.order);
 };
 
 // MAP

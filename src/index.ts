@@ -32,7 +32,7 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
   const outputPlaces = toOutputGPXPlaces(orderedPlacesCatalog);
 
   console.log(`-- Saving ${tracksCatalog.length} output track folders --`);
-  const tracksOutputPath = saveFolderStructure(outputTracks, tempOutputPath);
+  const tracksOutputPath = saveFolderStructure(outputTracks, `${tempOutputPath}/tracks`);
   console.log(`-- Saving points file --`);
   const pointsOutputFilePath = savePlaces(outputPlaces, tempOutputPath);
 
@@ -40,7 +40,7 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
     console.log(`-- Moving to device --`);
     stopApp(targetAppName);
     push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
-    push(pointsOutputFilePath, deviceOutputPath);
+    push(pointsOutputFilePath, `${deviceOutputPath}/favorites`);
   } catch (e) {
     const dirs = outputTracks.map((f) => f.name).join(", ");
     console.error(

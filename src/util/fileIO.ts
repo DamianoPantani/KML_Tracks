@@ -18,8 +18,7 @@ export function toKml<T = KML>(inputString: string): T {
   return JSON.parse(xml2json(inputString, { compact: true }));
 }
 
-export function saveFolderStructure(trackFolders: GpxFolder[], path: string) {
-  const outputPath = `${path}/tracks`;
+export function saveFolderStructure(trackFolders: GpxFolder[], outputPath: string) {
   if (existsSync(outputPath)) {
     console.warn(`-- Temp Output directory ${outputPath} already exists, removing --`);
     rmSync(outputPath, { recursive: true });
