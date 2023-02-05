@@ -14,9 +14,12 @@ export function toOutputGPXPlaces(inputFolders: Catalog<Place>[]): OutputFile {
   };
 }
 
-export function toOutputKMLPlaces(inputFolders: Catalog<Place>[]): OutputFile {
+export function toOutputKMLPlaces(
+  name: string,
+  inputFolders: Catalog<Place>[]
+): OutputFile {
   return {
-    name: "points.kml",
+    name: `${name}.kml`,
     content: toPlacesKml(inputFolders),
   };
 }
@@ -50,6 +53,46 @@ function toTrackGpx(track: Track, color: string): OutputFile {
 
   return {
     name: `${track.name}.gpx`,
+    content,
+  };
+}
+
+export function toMultiTrackKml(name: string, tracks: Track[]): OutputFile {
+  const content = `<?xml version="1.0" encoding="UTF-8"?>
+  <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+  <Document>
+    <name>${name}.kml</name>
+    <Style id="liineStyle">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>ff0000ff</color>
+      </PolyStyle>
+    </Style>
+      <Folder>
+        <name>${name}</name>${tracks
+    .map(
+      (track) => `
+      <Placemark>
+      <name>${track.name.replaceAll("&", "'n")}</name>
+      <styleUrl>#liineStyle</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          ${track.coords.map((c) => `${c.lon},${c.lat},0 `)}
+        </coordinates>
+      </LineString>
+    </Placemark>`
+    )
+    .join("")}
+      </Folder>
+  </Document>
+  </kml>`;
+
+  return {
+    name: `${name}.kml`,
     content,
   };
 }

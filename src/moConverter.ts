@@ -18,7 +18,7 @@ import { savePlaces, toKml } from "./util/fileIO";
   const { placesCatalog } = extractMotoOpiniePoints(znaczniki.znacznik);
 
   console.log(`-- Converting to file contents --`);
-  const outputPlaces = toOutputKMLPlaces(placesCatalog);
+  const outputPlaces = toOutputKMLPlaces("places", placesCatalog);
 
   console.log(`-- Saving points file --`);
   savePlaces(outputPlaces, tempOutputPath);
