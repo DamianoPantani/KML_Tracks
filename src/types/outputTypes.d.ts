@@ -21,7 +21,8 @@ type Track = {
 type Place = {
   name: string;
   coords: Coord;
-  isEvening: boolean;
+  evening: boolean;
+  description: string;
 };
 
 type Coord = {
@@ -46,8 +47,13 @@ type OutputFile = {
   content: string;
 };
 
-type Style = {
+type FolderStyle = {
   icon: string;
   color: string;
   order: string;
+};
+
+type PlaceStyle = {
+  description: string;
+  evening: boolean;
 };

@@ -1,4 +1,4 @@
-import { toMultiTrackKml, toOutputKMLPlaces } from "./util/gpxConverter";
+import { toOutputKMLPlaces } from "./util/gpxConverter";
 import { savePlaces } from "./util/fileIO";
 import { readFileSync } from "fs";
 
@@ -74,8 +74,9 @@ import { readFileSync } from "fs";
           color: "#111111",
           content: poisCol.map((t) => ({
             coords: t.coords[0],
-            isEvening: false,
+            evening: false,
             name: t.name,
+            description: "",
           })),
           icon: "",
           name,

@@ -106,15 +106,16 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
     .map((catalog) =>
       catalog.content
         .map(
-          (place) => `
-  <wpt lat="${place.coords.lat}" lon="${place.coords.lon}">
+          ({ coords, description, evening, name }) => `
+  <wpt lat="${coords.lat}" lon="${coords.lon}">
     <ele>0</ele>
     <time>${new Date().toISOString()}</time>
-    <name>${place.name}</name>
+    <name>${name}</name>
     <type>${catalog.name}</type>
+    ${description && `<desc>${description}</desc>`}
     <extensions>
-      <osmand:icon>${place.isEvening ? "special_sunset" : catalog.icon}</osmand:icon>
-      <osmand:background>${place.isEvening ? "square" : "circle"}</osmand:background>
+      <osmand:icon>${evening ? "special_sunset" : catalog.icon}</osmand:icon>
+      <osmand:background>${evening ? "square" : "circle"}</osmand:background>
       <osmand:color>${catalog.color}</osmand:color>
     </extensions>
   </wpt>`

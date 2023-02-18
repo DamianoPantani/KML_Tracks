@@ -1,50 +1,54 @@
 import { ConfigIniParser } from "config-ini-parser";
 
 // IMPORTANT: OsmAnd uses #AARRGGBB color format
-export class StyleParser {
-  private static DEFAULT_STYLE: Style = {
-    color: "#ddbb00",
-    icon: "special_marker",
-    order: "0",
-  };
+const DEFAULT_FOLDER_STYLE: FolderStyle = {
+  color: "#ddbb00",
+  icon: "special_marker",
+  order: "0",
+};
 
-  private nodeConfig?: string;
-  private nodeName: string;
+const DEFAULT_PLACE_STYLE: PlaceStyle = {
+  description: "",
+  evening: false,
+};
 
-  constructor(node: KMLNode) {
-    this.nodeConfig = node.description?._text;
-    this.nodeName = node.name._text;
+export const parseFolderStyle = (node: KMLNode): FolderStyle => {
+  const nodeConfig = node.description?._text;
+  const nodeName = node.name._text;
+  const prototype = DEFAULT_FOLDER_STYLE;
+
+  if (!nodeConfig) {
+    console.warn(
+      `Folder '${nodeName}' doesn't contain 'description' tag with style metadata. Using default`
+    );
+    return prototype;
   }
 
-  parseFolderStyle(): Style {
-    const { nodeConfig, nodeName } = this;
-    const prototype = StyleParser.DEFAULT_STYLE;
+  const configParser = new ConfigIniParser().parse(nodeConfig);
 
-    if (!nodeConfig) {
-      console.warn(
-        `Folder '${nodeName}' doesn't contain 'description' tag with style metadata. Using default`
-      );
-      return prototype;
-    }
+  return Object.entries(prototype).reduce((style, [key, defaultValue]) => {
+    const styleKey = key as keyof FolderStyle;
+    style[styleKey] =
+      configParser.getOptionFromDefaultSection(styleKey, "") || defaultValue;
 
-    const configParser = new ConfigIniParser().parse(nodeConfig);
+    return style;
+  }, {} as FolderStyle);
+};
 
-    return Object.entries(prototype).reduce((style, [key, defaultValue]) => {
-      const styleKey = key as keyof Style;
-      const value = configParser.getOptionFromDefaultSection(styleKey, "") as
-        | string
-        | undefined;
+export const parsePlaceStyle = (node?: StringAttribute): PlaceStyle => {
+  const nodeConfig = node?._text;
+  const prototype = DEFAULT_PLACE_STYLE;
 
-      if (value) {
-        style[styleKey] = value;
-      } else {
-        style[styleKey] = defaultValue;
-        console.warn(
-          `Folder '${nodeName}' doesn't contain '${key}' metadata. Using default`
-        );
-      }
-
-      return style;
-    }, {} as Style);
+  if (!nodeConfig) {
+    return prototype;
   }
-}
+
+  const configParser = new ConfigIniParser().parse(nodeConfig);
+
+  return Object.fromEntries(
+    Object.entries(prototype).map(([key, defaultValue]) => [
+      key,
+      configParser.getOptionFromDefaultSection(key, "") || defaultValue,
+    ])
+  ) as PlaceStyle;
+};

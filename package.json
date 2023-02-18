@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "type": "module",
-  "engines": {
-    "node": "12.9.1"
-  },
   "scripts": {
-    "build": "swc src -d dist",
+    "build": "tsc --build --force",
     "buildAndStart": "npm run build && npm run start",
-    "start": "node --experimental-modules --es-module-specifier-resolution=node dist/index.js"
+    "start": "node --experimental-modules --es-module-specifier-resolution=node dist/index.js",
+    "devStart": "nodemon -e ts --exec \"tsc && node --experimental-modules --es-module-specifier-resolution=node dist/index.js || exit 1\""
   },
   "author": "",
   "license": "ISC",
@@ -22,8 +20,6 @@
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
-    "@swc/cli": "^0.1.52",
-    "@swc/core": "^1.2.112",
     "@types/latinize": "^0.2.15",
     "@types/node": "^16.11.10",
     "@typescript-eslint/eslint-plugin": "^4.8.2",

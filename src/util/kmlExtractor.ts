@@ -1,6 +1,6 @@
 import latinize from "latinize";
 import { NameIterator } from "./NameIterator";
-import { StyleParser } from "./style";
+import { parseFolderStyle, parsePlaceStyle } from "./style";
 
 const nameIterator = new NameIterator();
 
@@ -37,7 +37,7 @@ export function extractFavorites(
         return results;
       }
 
-      const { icon, color, order } = new StyleParser(folder).parseFolderStyle();
+      const { icon, color, order } = parseFolderStyle(folder);
 
       if (tracks.length) {
         results.tracksCatalog.push({
@@ -80,7 +80,8 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
       const newPlace: Place = {
         name: nazwa,
         coords: { lat, lon: lng },
-        isEvening: false,
+        evening: false,
+        description: "",
       };
       const catalog = acc[typ] ?? createNewCatalog(typ);
 
@@ -110,7 +111,7 @@ function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const places = points.map<Place>((p) => ({
     name: nameIterator.next(p.name?._text ?? untitled),
     coords: parseCoords(p.Point)[0],
-    isEvening: p.description?._text.includes("evening=1") ?? false, // TODO: reuse StyleParser
+    ...parsePlaceStyle(p.description),
   }));
 
   return { tracks, places };
