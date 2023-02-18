@@ -1,18 +1,17 @@
-import { toMultiTrackKml } from "./util/gpxConverter";
+import { toMultiTrackKml, toOutputKMLPlaces } from "./util/gpxConverter";
 import { savePlaces } from "./util/fileIO";
 import { readFileSync } from "fs";
 
 (() => {
-  const inputFilePath = "C:/Users/Damiano/Desktop/relation.json";
+  const inputFilePath = "C:/Users/Damiano/Desktop/v.json";
 
   console.log(`-- Parsing file: ${inputFilePath} --`);
   const inputString = readFileSync(inputFilePath, "utf8");
 
   console.log(`-- Extracting pois --`);
-  const pois: Track[] = JSON.parse(inputString)
-    .elements.filter((e: any) => e.members?.length)
-    .flatMap((e: Record<string, unknown>): Track => {
-      const { members, tags = {} } = e;
+  const pois: Track[] = JSON.parse(inputString).elements.flatMap(
+    (e: Record<string, unknown>): Track => {
+      const { geometry, lat, lon, tags = {} } = e;
       const {
         "addr:city": city,
         altName,
@@ -25,10 +24,12 @@ import { readFileSync } from "fs";
         short_name,
       } = tags as Record<string, string>;
 
+      if (!geometry && !(lat || lon)) {
+        debugger;
+      }
+
       return {
-        coords: (members as Record<string, unknown>[])
-          .filter(({ geometry, lat, lon }) => geometry || (lat && lon))
-          .flatMap(({ geometry, lat, lon }) => (geometry ?? { lat, lon }) as Coord[]),
+        coords: (geometry ?? [{ lat, lon }]) as Coord[],
         name:
           [
             official_name,
@@ -44,10 +45,12 @@ import { readFileSync } from "fs";
             .filter(Boolean)
             .join("; ") || ".",
       };
-    });
+    }
+  );
   console.log(`-- Converting to file contents --`);
-  const allSortedPois = pois
-    .filter((p) => p.coords[0].lat && p.coords[0].lon && p.coords.length > 1)
+
+  const allSortedPoints = pois
+    .filter((p) => p.coords[0].lat && p.coords[0].lon && p.coords.length === 1)
     .sort((p1, p2) =>
       p2.coords[0].lat.toString().localeCompare(p1.coords[0].lat.toString())
     );
@@ -55,8 +58,8 @@ import { readFileSync } from "fs";
   const rowSize = 500;
   const colSize = 100;
 
-  for (let i = 0; i < allSortedPois.length; i += rowSize) {
-    const poisRow = allSortedPois
+  for (let i = 0; i < allSortedPoints.length; i += rowSize) {
+    const poisRow = allSortedPoints
       .slice(i, i + rowSize)
       .sort((p1, p2) =>
         p1.coords[0].lon.toString().localeCompare(p2.coords[0].lon.toString())
@@ -66,7 +69,19 @@ import { readFileSync } from "fs";
       const poisCol = poisRow.slice(j, j + colSize);
       const name = "viewpointsChunk_" + (i + j);
 
-      const outputPlaces = toMultiTrackKml(name, poisCol);
+      const outputPlaces = toOutputKMLPlaces(name, [
+        {
+          color: "#111111",
+          content: poisCol.map((t) => ({
+            coords: t.coords[0],
+            isEvening: false,
+            name: t.name,
+          })),
+          icon: "",
+          name,
+          order: "1",
+        },
+      ]);
 
       console.log(`-- Saving ${name} points file --`);
       savePlaces(outputPlaces, "C:/Users/Damiano/Desktop/vpt");
