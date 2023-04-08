@@ -1,8 +1,11 @@
+import { homedir } from "os";
 import { extractFavorites } from "./util/kmlExtractor";
 import { toOutputTracks, toOutputGPXPlaces } from "./util/gpxConverter";
 import { cleanUp, readFileAsKml, saveFolderStructure, savePlaces } from "./util/fileIO";
 import { push, stopApp } from "./util/adb";
 import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
+
+const homeDir = homedir();
 
 // TODOs:
 // tracks are hidden by default
@@ -10,9 +13,9 @@ import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 
 (() => {
   const targetAppName = "net.osmand"; // OR "net.osmand.plus";
-  const tempOutputPath = "C:/Users/Damiano/Desktop";
+  const tempOutputPath = `${homeDir}/Desktop`;
   const inputFilePath =
-    "C:/Users/Damiano/AppData/LocalLow/Google/GoogleEarth/myplaces.kml";
+  `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
   const deviceOutputPath = `storage/emulated/0/Android/data/${targetAppName}/files`;
 
   if (!inputFilePath) {

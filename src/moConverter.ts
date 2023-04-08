@@ -1,10 +1,13 @@
 import axios from "axios";
+import { homedir } from "os";
 import { extractMotoOpiniePoints } from "./util/kmlExtractor";
 import { toOutputKMLPlaces } from "./util/gpxConverter";
 import { savePlaces, toKml } from "./util/fileIO";
 
+const homeDir = homedir();
+
 (async () => {
-  const tempOutputPath = "C:/Users/Damiano/Desktop";
+  const tempOutputPath = `${homeDir}/Desktop`;
 
   console.log(`-- Downloading points --`);
   const { data } = await axios.get<string>(

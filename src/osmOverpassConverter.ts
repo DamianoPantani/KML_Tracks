@@ -1,9 +1,12 @@
 import { toOutputKMLPlaces } from "./util/gpxConverter";
 import { savePlaces } from "./util/fileIO";
 import { readFileSync } from "fs";
+import { homedir } from "os";
+
+const homeDir = homedir();
 
 (() => {
-  const inputFilePath = "C:/Users/Damiano/Desktop/v.json";
+  const inputFilePath = `${homeDir}/Desktop/v.json`;
 
   console.log(`-- Parsing file: ${inputFilePath} --`);
   const inputString = readFileSync(inputFilePath, "utf8");
@@ -85,7 +88,7 @@ import { readFileSync } from "fs";
       ]);
 
       console.log(`-- Saving ${name} points file --`);
-      savePlaces(outputPlaces, "C:/Users/Damiano/Desktop/vpt");
+      savePlaces(outputPlaces, `${homeDir}/Desktop/vpt`);
     }
   }
 
