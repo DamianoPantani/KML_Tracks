@@ -2,16 +2,16 @@ import { homedir } from "os";
 import { extractFavorites } from "./util/kmlExtractor";
 import { toOutputTracks, toOutputGPXPlaces } from "./util/gpxConverter";
 import { cleanUp, readFileAsKml, saveFolderStructure, savePlaces } from "./util/fileIO";
-import { push, stopApp } from "./util/adb";
+import { push, stopApp, startApp, removeContent } from "./util/adb";
 import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
+import { wait } from "./util/util";
 
 const homeDir = homedir();
 
 // TODOs:
-// tracks are hidden by default
 // you have to manually remove points / tracks beforehand - https://github.com/osmandapp/Osmand/issues/2750#issuecomment-981074188
 
-(() => {
+(async () => {
   const targetAppName = "net.osmand"; // OR "net.osmand.plus";
   const tempOutputPath = `${homeDir}/Desktop`;
   const inputFilePath = `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
@@ -52,6 +52,14 @@ const homeDir = homedir();
     );
     console.log(`-- Cleaning up --`);
     cleanUp(tracksOutputPath, pointsOutputFilePath);
+
+    console.log(`-- Starting the app, please wait a few seconds... --`);
+    startApp(targetAppName);
+
+    await wait(4000);
+
+    console.log(`-- Removing device favorites file --`);
+    removeContent(`${deviceOutputPath}/favorites/`); // without this you cannot manually remove favs on your device, they will re-appear when you reopen OsmAnd app
   } catch (e) {
     const { message } = e as Error;
     const dirs = outputTracks.map((f) => f.name).join(", ");

@@ -24,11 +24,11 @@ export function saveFolderStructure(trackFolders: GpxFolder[], outputPath: strin
     rmSync(outputPath, { recursive: true });
   }
 
-  mkdirSync(outputPath);
+  mkdirSync(outputPath, { recursive: true });
 
   trackFolders.forEach((folder) => {
     const subFolderPath = `${outputPath}/${folder.name}`;
-    mkdirSync(subFolderPath);
+    mkdirSync(subFolderPath, { recursive: true });
     folder.files.map((f) => {
       const outputFilePath = `${subFolderPath}/${f.name}`;
       writeFileSync(outputFilePath, f.content, { encoding: "utf-8" });
@@ -45,6 +45,7 @@ export function savePlaces(file: OutputFile, path: string) {
     rmSync(outputFilePath);
   }
 
+  mkdirSync(path, { recursive: true });
   writeFileSync(outputFilePath, file.content, { encoding: "utf-8" });
 
   return outputFilePath;

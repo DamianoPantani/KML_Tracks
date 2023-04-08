@@ -1,20 +1,23 @@
 import { execSync, ExecSyncOptions } from "child_process";
+const silent: ExecSyncOptions = { stdio: "pipe" };
 
 export function push(inputPath: string, outputPath: string) {
-  const silent: ExecSyncOptions = { stdio: "pipe" };
   execSync(`adb push "${inputPath}" "${outputPath}"`, silent);
 }
 
 export function removeContent(outputPath: string) {
-  execSync(`adb shell rm -rR "${shellPath(outputPath)}"`);
+  execSync(`adb shell "cd ${shellPath(outputPath)} && rm -rf *.gpx"`, silent);
 }
 
 export function stopApp(packageName: string) {
-  execSync(`adb shell am force-stop ${packageName}`);
+  execSync(`adb shell am force-stop ${packageName}`, silent);
 }
 
 export function startApp(packageName: string) {
-  execSync(`adb shell monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`);
+  execSync(
+    `adb shell monkey -p ${packageName} -c android.intent.category.LAUNCHER 1`,
+    silent
+  );
 }
 
 function shellPath(path: string): string {
