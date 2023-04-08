@@ -1,7 +1,7 @@
 export function toOutputTracks(inputFolders: Catalog<Track>[]): GpxFolder[] {
   return inputFolders.map((f) => {
     return {
-      name: f.name,
+      name: f.name.replaceAll(" ", "_"),
       files: f.content.map((t) => toTrackGpx(t, f.color)),
     };
   });
@@ -9,7 +9,7 @@ export function toOutputTracks(inputFolders: Catalog<Track>[]): GpxFolder[] {
 
 export function toOutputGPXPlaces(inputFolders: Catalog<Place>[]): OutputFile {
   return {
-    name: "favourites.gpx",
+    name: "favorites.gpx",
     content: toPlacesGpx(inputFolders),
   };
 }
@@ -33,26 +33,25 @@ function toTrackGpx(track: Track, color: string): OutputFile {
       .map(
         (c) => `
       <trkpt lat="${c.lat}" lon="${c.lon}">
-        <ele>0.000</ele>
+        <ele>0</ele>
       </trkpt>`
       )
       .join("")}
     </trkseg>
   </trk>
   <extensions>
-    <show_arrows>false</show_arrows>
-    <color>${color}</color>
-    <split_type>no_split</split_type>
-    <split_interval>0.0</split_interval>
-    <width>7</width>
-    <show_start_finish>false</show_start_finish>
-    <coloring_type>solid</coloring_type>
+    <osmand:color>${color}</osmand:color>
+    <osmand:split_type>no_split</osmand:split_type>
+    <osmand:split_interval>0.0</osmand:split_interval>
+    <osmand:width>7</osmand:width>
+    <osmand:show_start_finish>false</osmand:show_start_finish>
+    <osmand:coloring_type>solid</osmand:coloring_type>
   </extensions>
 </gpx>
   `;
 
   return {
-    name: `${track.name}.gpx`,
+    name: `${track.name.replaceAll(" ", "_")}.gpx`,
     content,
   };
 }
@@ -97,18 +96,17 @@ export function toMultiTrackKml(name: string, tracks: Track[]): OutputFile {
   };
 }
 
-function toPlacesGpx(catalog: Catalog<Place>[]): string {
+function toPlacesGpx(catalogs: Catalog<Place>[]): string {
   return `<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<gpx version="1.1" creator="OsmAnd 4.0.8" xmlns="http://www.topografix.com/GPX/1/1" xmlns:osmand="https://osmand.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<gpx version="1.1" creator="OsmAnd 4.4.6" xmlns="http://www.topografix.com/GPX/1/1" xmlns:osmand="https://osmand.net" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
   <metadata>
-    <name>favourites</name>
-  </metadata>${catalog
+    <name>favorites</name>
+  </metadata>${catalogs
     .map((catalog) =>
       catalog.content
         .map(
           ({ coords, description, evening, name }) => `
   <wpt lat="${coords.lat}" lon="${coords.lon}">
-    <ele>0</ele>
     <time>${new Date().toISOString()}</time>
     <name>${name}</name>
     <type>${catalog.name}</type>
@@ -123,6 +121,17 @@ function toPlacesGpx(catalog: Catalog<Place>[]): string {
         .join("")
     )
     .join("")}
+    ${catalogs
+      .map(
+        (catalog) => `
+    <extensions>
+      <osmand:points_groups>
+        <group name="${catalog.name}" color="${catalog.color}" icon="${catalog.icon}" background="circle" />
+      </osmand:points_groups>
+    </extensions>
+    `
+      )
+      .join("")}
 </gpx>`;
 }
 

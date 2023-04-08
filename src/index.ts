@@ -14,8 +14,7 @@ const homeDir = homedir();
 (() => {
   const targetAppName = "net.osmand"; // OR "net.osmand.plus";
   const tempOutputPath = `${homeDir}/Desktop`;
-  const inputFilePath =
-  `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
+  const inputFilePath = `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
   const deviceOutputPath = `storage/emulated/0/Android/data/${targetAppName}/files`;
 
   if (!inputFilePath) {
@@ -42,17 +41,25 @@ const homeDir = homedir();
   try {
     console.log(`-- Moving to device --`);
     stopApp(targetAppName);
-    push(`${tracksOutputPath}/.`, `${deviceOutputPath}/tracks`);
     push(pointsOutputFilePath, `${deviceOutputPath}/favorites`);
+    outputTracks.forEach((trackDir) =>
+      trackDir.files.forEach((track) =>
+        push(
+          `${tracksOutputPath}/${trackDir.name}/${track.name}`,
+          `${deviceOutputPath}/tracks/${trackDir.name}/${track.name}`
+        )
+      )
+    );
+    console.log(`-- Cleaning up --`);
+    cleanUp(tracksOutputPath, pointsOutputFilePath);
   } catch (e) {
+    const { message } = e as Error;
     const dirs = outputTracks.map((f) => f.name).join(", ");
+    console.error(message);
     console.error(
-      `Couldn't push files to device. Make sure all subfolders already exist: (${dirs}). If not, move generated tracks manually`
+      `Make sure all subfolders already exist: (${dirs}). If not, move generated tracks manually`
     );
   }
-
-  console.log(`-- Cleaning up --`);
-  cleanUp(tracksOutputPath, pointsOutputFilePath);
 
   console.log("-- DONE --");
 })();
