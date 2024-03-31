@@ -11,6 +11,7 @@ type Catalog<T> = {
   icon: string;
   color: string;
   order: string;
+  isHidden: boolean;
 };
 
 type Track = {
@@ -51,6 +52,7 @@ type FolderStyle = {
   icon: string;
   color: string;
   order: string;
+  isHidden: string;
 };
 
 type PlaceStyle = {

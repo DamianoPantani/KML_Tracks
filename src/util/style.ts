@@ -5,6 +5,7 @@ const DEFAULT_FOLDER_STYLE: FolderStyle = {
   color: "#ddbb00",
   icon: "special_marker",
   order: "0",
+  isHidden: "false",
 };
 
 const DEFAULT_PLACE_STYLE: PlaceStyle = {

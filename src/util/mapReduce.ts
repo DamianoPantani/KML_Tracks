@@ -1,12 +1,13 @@
-// SORT
-
 export const byOrderAttribute = (f1: Catalog<Place>, f2: Catalog<Place>): number => {
-  return f1.order.localeCompare(f2.order);
+  return f2.order.localeCompare(f1.order);
 };
 
-// MAP
-
-export const renameByOrder = (folder: Catalog<Place>, i: number): Catalog<Place> => {
-  folder.name = `${i}. ${folder.name}`;
+export const renameByOrder = (
+  folder: Catalog<Place>,
+  i: number,
+  array: Catalog<Place>[]
+): Catalog<Place> => {
+  const revertedOrder = array[array.length - i - 1].order;
+  folder.name = `${revertedOrder}. ${folder.name}`;
   return folder;
 };

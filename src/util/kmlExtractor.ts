@@ -29,7 +29,8 @@ export function extractFavorites(
       extractFavorites(folder.Folder, true, nestedFolderName, results);
     }
 
-    if (folder?.Placemark) {
+    // skip root folder ("My Places") favorites
+    if (folder?.Placemark && isNested) {
       const { places, tracks } = splitFavorites(folder.Placemark);
       const catalogName = latinize(nestedFolderName);
 
@@ -37,7 +38,7 @@ export function extractFavorites(
         return results;
       }
 
-      const { icon, color, order } = parseFolderStyle(folder);
+      const { icon, color, order, isHidden } = parseFolderStyle(folder);
 
       if (tracks.length) {
         results.tracksCatalog.push({
@@ -46,6 +47,7 @@ export function extractFavorites(
           icon,
           color,
           order,
+          isHidden: isHidden.toLowerCase() === "true",
         });
       }
 
@@ -56,6 +58,7 @@ export function extractFavorites(
           icon,
           color,
           order,
+          isHidden: isHidden.toLowerCase() === "true",
         });
       }
     }
@@ -72,6 +75,7 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
     color: "",
     order: "",
     content: [],
+    isHidden: false,
   });
 
   const catalogs = folder.reduce<Record<string, Catalog<Place>>>(
@@ -98,21 +102,23 @@ export function extractMotoOpiniePoints(folder: MOPoint[]): Favorites {
 function splitFavorites(placemarks: Placemark | Placemark[]): ParsedCatalog {
   const allPlacemarks = Array.isArray(placemarks) ? placemarks : [placemarks];
   const placemarkGroups: GroupedPlacemarks = { routes: [], points: [] };
-  const { routes, points } = allPlacemarks
-    .filter(isVisible)
-    .reduce(splitByType, placemarkGroups);
+  const { routes, points } = allPlacemarks.reduce(splitByType, placemarkGroups);
   const untitled = "Untitled";
 
-  const tracks = routes.map<Track>((r) => ({
-    name: nameIterator.next(latinize(r.name?._text ?? untitled)),
-    coords: parseCoords(r.LineString),
-  }));
+  const tracks = routes.map(
+    (r): Track => ({
+      name: nameIterator.next(latinize(r.name?._text ?? untitled)),
+      coords: parseCoords(r.LineString),
+    })
+  );
 
-  const places = points.map<Place>((p) => ({
-    name: nameIterator.next(p.name?._text ?? untitled),
-    coords: parseCoords(p.Point)[0],
-    ...parsePlaceStyle(p.description),
-  }));
+  const places = points.map(
+    (p): Place => ({
+      name: nameIterator.next(p.name?._text ?? untitled),
+      coords: parseCoords(p.Point)[0],
+      ...parsePlaceStyle(p.description),
+    })
+  );
 
   return { tracks, places };
 }
@@ -121,10 +127,6 @@ function splitByType(results: GroupedPlacemarks, placemark: Placemark) {
   isRoute(placemark) && results.routes.push(placemark);
   isPoint(placemark) && results.points.push(placemark);
   return results;
-}
-
-function isVisible(placemark: Placemark) {
-  return placemark.visibility?._text !== "0";
 }
 
 function isRoute(placemark: Placemark): placemark is Route {

@@ -84,6 +84,7 @@ const homeDir = homedir();
           icon: "",
           name,
           order: "1",
+          isHidden: false,
         },
       ]);
 

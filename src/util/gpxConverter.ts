@@ -115,6 +115,7 @@ function toPlacesGpx(catalogs: Catalog<Place>[]): string {
       <osmand:icon>${evening ? "special_sunset" : catalog.icon}</osmand:icon>
       <osmand:background>${evening ? "square" : "circle"}</osmand:background>
       <osmand:color>${catalog.color}</osmand:color>
+      ${catalog.isHidden ? "<osmand:hidden>true</osmand:hidden>" : ""}
     </extensions>
   </wpt>`
         )
@@ -123,10 +124,10 @@ function toPlacesGpx(catalogs: Catalog<Place>[]): string {
     .join("")}
     ${catalogs
       .map(
-        (catalog) => `
+        ({ name, color, icon }) => `
     <extensions>
       <osmand:points_groups>
-        <group name="${catalog.name}" color="${catalog.color}" icon="${catalog.icon}" background="circle" />
+        <group name="${name}" color="${color}" icon="${icon}" background="circle" />
       </osmand:points_groups>
     </extensions>
     `
