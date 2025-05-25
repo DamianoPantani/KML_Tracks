@@ -15,7 +15,7 @@ const homeDir = homedir();
   const targetAppName = "net.osmand"; // OR "net.osmand.plus";
   const tempOutputPath = `${homeDir}/Desktop`;
   const inputFilePath = `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
-  const deviceOutputPath = `storage/emulated/0/Android/data/${targetAppName}/files`;
+  const deviceOutputPath = `storage/emulated/0/Android/obb/${targetAppName}`;
 
   if (!inputFilePath) {
     console.error(`-- Cannot find input file: ${inputFilePath} --`);

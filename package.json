@@ -2,7 +2,7 @@
   "name": "kmlprocessor",
   "version": "1.0.0",
   "main": "src/index.ts",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "build": "tsc --build --force",
     "buildAndStart": "npm run build && npm run start",
@@ -12,17 +12,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^1.9.0",
     "config-ini-parser": "^1.5.9",
-    "latinize": "^0.5.0",
+    "latinize": "^2.0.0",
     "ts-node": "^10.4.0",
-    "typescript": "^4.1.5",
+    "typescript": "^5.8.3",
     "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "@types/latinize": "^0.2.15",
-    "@types/node": "^16.11.10",
-    "@typescript-eslint/eslint-plugin": "^4.8.2",
-    "@typescript-eslint/parser": "^4.8.2"
+    "@types/node": "^22.15.21",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1"
   }
 }
