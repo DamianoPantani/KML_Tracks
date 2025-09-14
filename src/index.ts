@@ -1,7 +1,7 @@
 import { homedir } from "os";
 import { extractFavorites } from "./util/kmlExtractor";
 import { toOutputTracks, toOutputGPXPlaces } from "./util/gpxConverter";
-import { cleanUp, readFileAsKml, saveFolderStructure, savePlaces } from "./util/fileIO";
+import { cleanUp, findKml, readFileAsKml, saveFolderStructure, savePlaces } from "./util/fileIO";
 import { push, stopApp, startApp, removeContent } from "./util/adb";
 import { byOrderAttribute, renameByOrder } from "./util/mapReduce";
 import { wait } from "./util/util";
@@ -14,14 +14,17 @@ const homeDir = homedir();
 (async () => {
   const targetAppName = "net.osmand"; // OR "net.osmand.plus";
   const tempOutputPath = `${homeDir}/Desktop`;
-  const inputFilePath = `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
+  const fallbackFilePath = `${homeDir}/AppData/LocalLow/Google/GoogleEarth/myplaces.kml`;
   const deviceOutputPath = `storage/emulated/0/Android/obb/${targetAppName}`;
 
-  if (!inputFilePath) {
-    console.error(`-- Cannot find input file: ${inputFilePath} --`);
-    return;
+  const outputPathKml = findKml(tempOutputPath);
+
+  
+  if (!outputPathKml) {
+    console.error(`-- No kml files in output dir. Trying fallack file --`);
   }
 
+  const inputFilePath = outputPathKml || fallbackFilePath;
   console.log(`-- Parsing file: ${inputFilePath} --`);
   const kml = readFileAsKml(inputFilePath);
 

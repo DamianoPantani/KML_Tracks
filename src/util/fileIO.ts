@@ -1,4 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "fs";
 import { xml2json } from "xml-js";
 
 // files specific utils:
@@ -8,6 +15,12 @@ export function cleanUp(...paths: string[]) {
 }
 
 // app specific utils:
+
+export function findKml(inputFilePath: string) {
+  const name = readdirSync(inputFilePath).find((path) => path.endsWith(".kml"));
+
+  return name ? `${inputFilePath}/${name}` : undefined;
+}
 
 export function readFileAsKml<T = KML>(inputFilePath: string): T {
   const fullKml = readFileSync(inputFilePath, "utf8");
